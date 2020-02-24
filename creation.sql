@@ -1,5 +1,5 @@
 
-CREATE TABLE county (
+CREATE TABLE "state" (
   "id" integer PRIMARY KEY,
 
   "name" varchar
@@ -7,15 +7,15 @@ CREATE TABLE county (
 
 CREATE TABLE city (
   "id" integer PRIMARY KEY,
-  "state_id" integer REFERENCES county(id),
+  "state_id" integer REFERENCES "state"(id),
 
   "name" varchar,
   "code" varchar
 );
 
-CREATE TABLE user (
+CREATE TABLE "user" (
   "id" int PRIMARY KEY,
-  "user_id" integer REFERENCES user(id),
+  "user_id" integer REFERENCES "user"(id),
   "business_id" integer REFERENCES business(id),
 
   "name" varchar,
@@ -42,7 +42,7 @@ CREATE TABLE user (
 );
 
 CREATE TABLE business (
-  "id" integer  PRIMARY KEY,
+  "id" integer PRIMARY KEY,
   "city_id" integer REFERENCES city(id),
 
   "name" varchar,
@@ -57,8 +57,8 @@ CREATE TABLE business (
 );
 
 CREATE TABLE review (
-  "id" integer  PRIMARY KEY,
-  "user_id" integer REFERENCES user(id),
+  "id" integer PRIMARY KEY,
+  "user_id" integer REFERENCES "user"(id),
   "business_id" integer REFERENCES business(id),
 
   "date" date,
@@ -70,8 +70,8 @@ CREATE TABLE review (
 );
 
 CREATE TABLE tip (
-  "id" integer  PRIMARY KEY,
-  "user_id" integer REFERENCES user(id),
+  "id" integer PRIMARY KEY,
+  "user_id" integer REFERENCES "user"(id),
   "business_id" integer REFERENCES business(id),
 
   "date" date,
@@ -86,59 +86,74 @@ CREATE TABLE business_categorie (
   PRIMARY KEY (business_id,categorie_id)
 );
 
+CREATE TABLE noise_level (
+  "id" integer PRIMARY KEY,
+  "level" varchar,
+);
+
 CREATE TABLE categorie (
-  "id" int PRIMARY KEY,
+  "id" integer PRIMARY KEY,
   "name" varchar,
 );
 
-/* TODO Horraires */
+CREATE TABLE music (
+  "id" integer PRIMARY KEY REFERENCES business(id),
 
-/* Attributes */
-/*
-- NoiseLevel
-  - quiet
-  - average
-  - u'quiet
-  - u'average
-  - u'loud
-  - u'very_loud
-- Music
-  - dj
-  - background_music
-  - no_music
-  - jukebox
-  - live
-  - video
-  - karaoke
-- BusinessParking
-  - garage
-  - street
-  - validated
-  - lot
-  - valet
-- Ambience
-  - touristy
-  - hipster
-  - romantic'
-  - divey
-  - intimate
-  - trendy
-  - upscale
-  - classy
-  - casual
-- GoodForMeal
-  - dessert
-  - latenight
-  - lunch
-  - dinner
-  - brunch
-  - breakfast
-- DietaryRestrictions
-  - dairy-free
-  - gluten-free
-  - vegan
-  - kosher
-  - halal
-  - soy-free
-  - vegetarian
-*/
+  "dj" boolean,
+  "background_music" boolean,
+  "no_music" boolean,
+  "jukebox" boolean,
+  "live" boolean,
+  "video" boolean,
+  "karaoke" boolean,
+);
+
+CREATE TABLE business_parking (
+  "id" integer PRIMARY KEY REFERENCES business(id),
+  "dj" boolean,
+  "garage" boolean,
+  "street" boolean,
+  "validated" boolean,
+  "lot" boolean,
+  "valet" boolean,
+);
+
+CREATE TABLE ambience (
+  "id" integer PRIMARY KEY REFERENCES business(id),
+
+  "touristy" boolean,
+  "hipster" boolean,
+  "romantic" boolean,
+  "divey" boolean,
+  "intimate" boolean,
+  "trendy" boolean,
+  "upscale" boolean,
+  "classy" boolean,
+  "casual" boolean,
+);
+
+CREATE TABLE good_for_meal (
+  "id" integer PRIMARY KEY REFERENCES business(id),
+  
+  "dessert" boolean,
+  "latenight" boolean,
+  "lunch" boolean,
+  "dinner" boolean,
+  "brunch" boolean,
+);
+
+CREATE TABLE dietary_restrictions (
+  "id" integer PRIMARY KEY REFERENCES business(id),
+
+  "dairy-free" boolean,
+  "gluten-free" boolean,
+  "vegan" boolean,
+  "kosher" boolean,
+  "halal" boolean,
+  "soy-free" boolean,
+  "vegetarian" boolean,
+);
+
+
+/* TODO Horaires */
+/* TODO Friends */
