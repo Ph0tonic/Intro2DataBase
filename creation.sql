@@ -110,7 +110,6 @@ CREATE TABLE music (
 
 CREATE TABLE business_parking (
   "id" integer PRIMARY KEY REFERENCES business(id),
-  "dj" boolean,
   "garage" boolean,
   "street" boolean,
   "validated" boolean,
