@@ -14,9 +14,8 @@ CREATE TABLE city (
 );
 
 CREATE TABLE "user" (
-  "id" int PRIMARY KEY,
+  "id" integer PRIMARY KEY,
   "user_id" integer REFERENCES "user"(id),
-  "business_id" integer REFERENCES business(id),
 
   "name" varchar,
   "yelping_since" date,
@@ -54,6 +53,7 @@ CREATE TABLE business (
   /* TODO Computed */
   "review_count" integer,
   "stars" integer
+  
 );
 
 CREATE TABLE review (
