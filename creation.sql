@@ -99,58 +99,58 @@ CREATE TABLE categorie (
 CREATE TABLE music (
   "id" integer PRIMARY KEY REFERENCES business(id),
 
-  "dj" boolean,
-  "background_music" boolean,
-  "no_music" boolean,
-  "jukebox" boolean,
-  "live" boolean,
-  "video" boolean,
-  "karaoke" boolean,
+  "dj" boolean NOT NULL,
+  "background_music" boolean NOT NULL,
+  "no_music" boolean NOT NULL,
+  "jukebox" boolean NOT NULL,
+  "live" boolean NOT NULL,
+  "video" boolean NOT NULL,
+  "karaoke" boolean NOT NULL,
 );
 
 CREATE TABLE business_parking (
   "id" integer PRIMARY KEY REFERENCES business(id),
-  "garage" boolean,
-  "street" boolean,
-  "validated" boolean,
-  "lot" boolean,
-  "valet" boolean,
+  "garage" boolean NOT NULL,
+  "street" boolean NOT NULL,
+  "validated" boolean NOT NULL,
+  "lot" boolean NOT NULL,
+  "valet" boolean NOT NULL,
 );
 
 CREATE TABLE ambience (
   "id" integer PRIMARY KEY REFERENCES business(id),
 
-  "touristy" boolean,
-  "hipster" boolean,
-  "romantic" boolean,
-  "divey" boolean,
-  "intimate" boolean,
-  "trendy" boolean,
-  "upscale" boolean,
-  "classy" boolean,
-  "casual" boolean,
+  "touristy" boolean NOT NULL,
+  "hipster" boolean NOT NULL,
+  "romantic" boolean NOT NULL,
+  "divey" boolean NOT NULL,
+  "intimate" boolean NOT NULL,
+  "trendy" boolean NOT NULL,
+  "upscale" boolean NOT NULL,
+  "classy" boolean NOT NULL,
+  "casual" boolean NOT NULL,
 );
 
 CREATE TABLE good_for_meal (
   "id" integer PRIMARY KEY REFERENCES business(id),
   
-  "dessert" boolean,
-  "latenight" boolean,
-  "lunch" boolean,
-  "dinner" boolean,
-  "brunch" boolean,
+  "dessert" boolean NOT NULL,
+  "latenight" boolean NOT NULL,
+  "lunch" boolean NOT NULL,
+  "dinner" boolean NOT NULL,
+  "brunch" boolean NOT NULL,
 );
 
 CREATE TABLE dietary_restrictions (
   "id" integer PRIMARY KEY REFERENCES business(id),
 
-  "dairy-free" boolean,
-  "gluten-free" boolean,
-  "vegan" boolean,
-  "kosher" boolean,
-  "halal" boolean,
-  "soy-free" boolean,
-  "vegetarian" boolean,
+  "dairy-free" boolean NOT NULL,
+  "gluten-free" boolean NOT NULL,
+  "vegan" boolean NOT NULL,
+  "kosher" boolean NOT NULL,
+  "halal" boolean NOT NULL,
+  "soy-free" boolean NOT NULL,
+  "vegetarian" boolean NOT NULL,
 );
 
 CREATE TABLE are_friends (
