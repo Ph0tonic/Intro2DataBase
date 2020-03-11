@@ -2,81 +2,81 @@
 CREATE TABLE "state" (
   "id" integer PRIMARY KEY,
 
-  "name" varchar
+  "name" varchar NOT NULL
 );
 
 CREATE TABLE city (
   "id" integer PRIMARY KEY,
-  "state_id" integer REFERENCES "state"(id),
+  "state_id" integer NOT NULL REFERENCES "state"(id),
 
-  "name" varchar,
-  "code" varchar
+  "name" varchar NOT NULL,
+  "code" varchar NOT NULL
 );
 
 CREATE TABLE "user" (
   "id" integer PRIMARY KEY,
-  "user_id" integer REFERENCES "user"(id),
 
-  "name" varchar,
+  "name" varchar UNIQUE NOT NULL,
   "yelping_since" date,
-  "compliment_count" integer,
-  "compliment_cool" integer,
-  "compliment_cute" integer,
-  "compliment_funny" integer,
-  "compliment_hot" integer,
-  "compliment_list" integer,
-  "compliment_more" integer,
-  "compliment_note" integer,
-  "compliment_photos" integer,
-  "compliment_plain" integer,
-  "compliment_profile" integer,
-  "compliment_writer" integer,
-  "cool" integer,
-  "elite" integer,
-  "fans" integer,
-  "funny" integer,
-  "useful" integer,
-  "average_stars" integer,
-  "review_count" integer
+  "compliment_count" integer NOT NULL DEFAULT 0 CHECK ("compliment_count" >= 0),
+  "compliment_cool" integer NOT NULL DEFAULT 0 CHECK ("compliment_cool" >= 0),
+  "compliment_cute" integer NOT NULL DEFAULT 0 CHECK ("compliment_cute" >= 0),
+  "compliment_funny" integer NOT NULL DEFAULT 0 CHECK ("compliment_funny" >= 0),
+  "compliment_hot" integer NOT NULL DEFAULT 0 CHECK ("compliment_hot" >= 0),
+  "compliment_list" integer NOT NULL DEFAULT 0 CHECK ("compliment_list" >= 0),
+  "compliment_more" integer NOT NULL DEFAULT 0 CHECK ("compliment_more" >= 0),
+  "compliment_note" integer NOT NULL DEFAULT 0 CHECK ("compliment_note" >= 0),
+  "compliment_photos" integer NOT NULL DEFAULT 0 CHECK ("compliment_photos" >= 0),
+  "compliment_plain" integer NOT NULL DEFAULT 0 CHECK ("compliment_plain" >= 0),
+  "compliment_profile" integer NOT NULL DEFAULT 0 CHECK ("compliment_profile" >= 0),
+  "compliment_writer" integer NOT NULL DEFAULT 0 CHECK ("compliment_writer" >= 0),
+  "cool" integer NOT NULL DEFAULT 0 CHECK ("cool" >= 0),
+  "elite" integer NOT NULL DEFAULT 0 CHECK ("elite" >= 0),
+  "fans" integer NOT NULL DEFAULT 0 CHECK ("fans" >= 0),
+  "funny" integer NOT NULL DEFAULT 0 CHECK ("funny" >= 0),
+  "useful" integer NOT NULL DEFAULT 0 CHECK ("useful" >= 0),
+  "average_stars" numeric(3, 2) DEFAULT NULL CHECK ("average_stars" >= 1 AND "average_stars" <= 5), 
+  "review_count" integer NOT NULL DEFAULT 0 CHECK ("review_count" >= 0)
 );
 
 CREATE TABLE business (
   "id" integer PRIMARY KEY,
-  "city_id" integer REFERENCES city(id),
+  "city_id" integer NOT NULL REFERENCES city(id),
 
-  "name" varchar,
-  "address" varchar,
+  "name" varchar NOT NULL,
+  "address" varchar NOT NULL,
   "is_open" boolean,
-  "latitude" varchar,
-  "longitude" varchar,
+  "latitude" varchar NOT NULL,
+  "longitude" varchar NOT NULL,
 
   /* TODO Computed */
-  "review_count" integer,
-  "stars" integer
-  
+  "review_count" integer DEFAULT 0 CHECK ("review_count" >= 0),
+  "stars" numeric(3, 2) DEFAULT NULL CHECK ("average_stars" >= 1 AND "average_stars" <= 5)
 );
 
 CREATE TABLE review (
   "id" integer PRIMARY KEY,
-  "user_id" integer REFERENCES "user"(id),
-  "business_id" integer REFERENCES business(id),
+  "user_id" integer NOT NULL REFERENCES "user"(id),
+  "business_id" integer NOT NULL REFERENCES business(id),
 
-  "date" date,
-  "text" varchar,
-  "cool" integer,
-  "funny" integer,
-  "stars" integer,
-  "useful" integer
+  "date" date NOT NULL,
+  "text" varchar NOT NULL,
+  "cool" integer NOT NULL DEFAULT 0 CHECK ("cool" >= 0),
+  "funny" integer NOT NULL DEFAULT 0 CHECK ("funny" >= 0),
+  "stars" integer NOT NULL CHECK ("average_stars" >= 1 AND "average_stars" <= 5),
+  "useful" integer NOT NULL DEFAULT 0 CHECK ("useful" >= 0)
 );
+
+ALTER TABLE 
 
 CREATE TABLE tip (
   "id" integer PRIMARY KEY,
-  "user_id" integer REFERENCES "user"(id),
-  "business_id" integer REFERENCES business(id),
+  "user_id" integer NOT NULL REFERENCES "user"(id),
+  "business_id" integer NOT NULL REFERENCES business(id),
 
-  "date" date,
-  "text" varchar,
-  "compliment_count" integer
+  "date" date NOT NULL,
+  "text" varchar NOT NULL,
+  "compliment_count" integer NOT NULL DEFAULT 0 CHECK ("compliment_count" >= 0)
 );
 
 CREATE TABLE business_categorie (
@@ -153,6 +153,12 @@ CREATE TABLE dietary_restrictions (
   "vegetarian" boolean,
 );
 
+CREATE TABLE are_friends (
+  "user_id_1" integer REFERENCES "user"(id),
+  "user_id_2" integer REFERENCES "user"(id),
+  PRIMARY KEY ("user_id_1", "user_id_2"),
+);
+ALTER TABLE are_friends ADD CONSTRAINT "user_id_1" check("user_id_1" <> "user_id_2");
+ALTER TABLE are_friends ADD CONSTRAINT "user_id_2" check("user_id_1" <> "user_id_2");
 
 /* TODO Horaires */
-/* TODO Friends */
