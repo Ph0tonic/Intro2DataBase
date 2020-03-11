@@ -80,20 +80,20 @@ CREATE TABLE tip (
 );
 
 CREATE TABLE business_categorie (
-  "business_id" integer ,
+  "business_id" integer,
   "categorie_id" integer,
 
-  PRIMARY KEY (business_id,categorie_id)
+  PRIMARY KEY (business_id, categorie_id)
 );
 
 CREATE TABLE noise_level (
   "id" integer PRIMARY KEY,
-  "level" varchar,
+  "level" varchar NOT NULL,
 );
 
 CREATE TABLE categorie (
   "id" integer PRIMARY KEY,
-  "name" varchar,
+  "name" varchar NOT NULL,
 );
 
 CREATE TABLE music (
@@ -156,9 +156,23 @@ CREATE TABLE dietary_restrictions (
 CREATE TABLE are_friends (
   "user_id_1" integer REFERENCES "user"(id),
   "user_id_2" integer REFERENCES "user"(id),
+
   PRIMARY KEY ("user_id_1", "user_id_2"),
 );
 ALTER TABLE are_friends ADD CONSTRAINT "user_id_1" check("user_id_1" <> "user_id_2");
 ALTER TABLE are_friends ADD CONSTRAINT "user_id_2" check("user_id_1" <> "user_id_2");
 
-/* TODO Horaires */
+CREATE TABLE day (
+  "id" integer PRIMARY KEY,
+  "name" varchar NOT NULL
+);
+
+CREATE TABLE schedule (
+  "id" integer NOT NULL UNIQUE, 
+  "business_id" integer REFERENCES business(id),
+  "day_id" integer REFERENCES day(id),
+  "start_at" time NOT NULL,
+  "end_at" time NOT NULL,
+
+  PRIMARY KEY ("id", "business_id", "day_id"),
+);
