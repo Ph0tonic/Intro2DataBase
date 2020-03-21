@@ -10,14 +10,13 @@ CREATE TABLE city (
   "state_id" integer NOT NULL REFERENCES "state"(id),
 
   "name" varchar NOT NULL,
-  "code" varchar NOT NULL
 );
 
 CREATE TABLE "user" (
   "id" integer PRIMARY KEY,
 
-  "name" varchar UNIQUE NOT NULL,
-  "yelping_since" date,
+  "name" varchar NOT NULL,
+  "yelping_since" date NOT NULL,
   "compliment_count" integer NOT NULL DEFAULT 0 CHECK ("compliment_count" >= 0),
   "compliment_cool" integer NOT NULL DEFAULT 0 CHECK ("compliment_cool" >= 0),
   "compliment_cute" integer NOT NULL DEFAULT 0 CHECK ("compliment_cute" >= 0),
@@ -48,16 +47,18 @@ CREATE TABLE business (
   "is_open" boolean,
   "latitude" varchar NOT NULL,
   "longitude" varchar NOT NULL,
+  "code" varchar NOT NULL,
 
-  /* TODO Computed */
   "review_count" integer DEFAULT 0 CHECK ("review_count" >= 0),
   "stars" numeric(3, 2) DEFAULT NULL CHECK ("average_stars" >= 1 AND "average_stars" <= 5)
 );
 
 CREATE TABLE review (
-  "id" integer PRIMARY KEY,
+  "id" integer,
   "user_id" integer NOT NULL REFERENCES "user"(id),
-  "business_id" integer NOT NULL REFERENCES business(id),
+  "business_id" integer REFERENCES business(id),
+
+  PRIMARY KEY (id, business_id),
 
   "date" date NOT NULL,
   "text" varchar NOT NULL,
@@ -67,12 +68,12 @@ CREATE TABLE review (
   "useful" integer NOT NULL DEFAULT 0 CHECK ("useful" >= 0)
 );
 
-ALTER TABLE 
-
 CREATE TABLE tip (
-  "id" integer PRIMARY KEY,
+  "id" integer,
   "user_id" integer NOT NULL REFERENCES "user"(id),
   "business_id" integer NOT NULL REFERENCES business(id),
+
+  PRIMARY KEY (id, business_id),
 
   "date" date NOT NULL,
   "text" varchar NOT NULL,
@@ -80,8 +81,8 @@ CREATE TABLE tip (
 );
 
 CREATE TABLE business_categorie (
-  "business_id" integer,
-  "categorie_id" integer,
+  "business_id" integer NOT NULL REFERENCES business(id),
+  "categorie_id" integer NOT NULL REFERENCES categorie(id),
 
   PRIMARY KEY (business_id, categorie_id)
 );
