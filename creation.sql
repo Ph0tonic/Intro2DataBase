@@ -100,58 +100,58 @@ CREATE TABLE categorie (
 CREATE TABLE music (
   "id" integer PRIMARY KEY REFERENCES business(id),
 
-  "dj" boolean NOT NULL,
-  "background_music" boolean NOT NULL,
-  "no_music" boolean NOT NULL,
-  "jukebox" boolean NOT NULL,
-  "live" boolean NOT NULL,
-  "video" boolean NOT NULL,
-  "karaoke" boolean NOT NULL,
+  "dj" boolean NOT NULL DEFAULT false,
+  "background_music" boolean NOT NULL DEFAULT false,
+  "no_music" boolean NOT NULL DEFAULT false,
+  "jukebox" boolean NOT NULL DEFAULT false,
+  "live" boolean NOT NULL DEFAULT false,
+  "video" boolean NOT NULL DEFAULT false,
+  "karaoke" boolean NOT NULL DEFAULT false,
 );
 
 CREATE TABLE business_parking (
   "id" integer PRIMARY KEY REFERENCES business(id),
-  "garage" boolean NOT NULL,
-  "street" boolean NOT NULL,
-  "validated" boolean NOT NULL,
-  "lot" boolean NOT NULL,
-  "valet" boolean NOT NULL,
+  "garage" boolean NOT NULL DEFAULT false,
+  "street" boolean NOT NULL DEFAULT false,
+  "validated" boolean NOT NULL DEFAULT false,
+  "lot" boolean NOT NULL DEFAULT false,
+  "valet" boolean NOT NULL DEFAULT false,
 );
 
 CREATE TABLE ambience (
   "id" integer PRIMARY KEY REFERENCES business(id),
 
-  "touristy" boolean NOT NULL,
-  "hipster" boolean NOT NULL,
-  "romantic" boolean NOT NULL,
-  "divey" boolean NOT NULL,
-  "intimate" boolean NOT NULL,
-  "trendy" boolean NOT NULL,
-  "upscale" boolean NOT NULL,
-  "classy" boolean NOT NULL,
-  "casual" boolean NOT NULL,
+  "touristy" boolean NOT NULL DEFAULT false,
+  "hipster" boolean NOT NULL DEFAULT false,
+  "romantic" boolean NOT NULL DEFAULT false,
+  "divey" boolean NOT NULL DEFAULT false,
+  "intimate" boolean NOT NULL DEFAULT false,
+  "trendy" boolean NOT NULL DEFAULT false,
+  "upscale" boolean NOT NULL DEFAULT false,
+  "classy" boolean NOT NULL DEFAULT false,
+  "casual" boolean NOT NULL DEFAULT false,
 );
 
 CREATE TABLE good_for_meal (
   "id" integer PRIMARY KEY REFERENCES business(id),
   
-  "dessert" boolean NOT NULL,
-  "latenight" boolean NOT NULL,
-  "lunch" boolean NOT NULL,
-  "dinner" boolean NOT NULL,
-  "brunch" boolean NOT NULL,
+  "dessert" boolean NOT NULL DEFAULT false,
+  "latenight" boolean NOT NULL DEFAULT false,
+  "lunch" boolean NOT NULL DEFAULT false,
+  "dinner" boolean NOT NULL DEFAULT false,
+  "brunch" boolean NOT NULL DEFAULT false,
 );
 
 CREATE TABLE dietary_restrictions (
   "id" integer PRIMARY KEY REFERENCES business(id),
 
-  "dairy-free" boolean NOT NULL,
-  "gluten-free" boolean NOT NULL,
-  "vegan" boolean NOT NULL,
-  "kosher" boolean NOT NULL,
-  "halal" boolean NOT NULL,
-  "soy-free" boolean NOT NULL,
-  "vegetarian" boolean NOT NULL,
+  "dairy-free" boolean NOT NULL DEFAULT false,
+  "gluten-free" boolean NOT NULL DEFAULT false,
+  "vegan" boolean NOT NULL DEFAULT false,
+  "kosher" boolean NOT NULL DEFAULT false,
+  "halal" boolean NOT NULL DEFAULT false,
+  "soy-free" boolean NOT NULL DEFAULT false,
+  "vegetarian" boolean NOT NULL DEFAULT false,
 );
 
 CREATE TABLE are_friends (
