@@ -30,7 +30,7 @@ CREATE TABLE "user" (
   "compliment_profile" integer NOT NULL DEFAULT 0 CHECK ("compliment_profile" >= 0),
   "compliment_writer" integer NOT NULL DEFAULT 0 CHECK ("compliment_writer" >= 0),
   "cool" integer NOT NULL DEFAULT 0 CHECK ("cool" >= 0),
-  "elite" integer NOT NULL DEFAULT 0 CHECK ("elite" >= 0),
+  "elite" integer NOT NULL DEFAULT 0 CHECK ("elite" >= 0), --TODO: wrong
   "fans" integer NOT NULL DEFAULT 0 CHECK ("fans" >= 0),
   "funny" integer NOT NULL DEFAULT 0 CHECK ("funny" >= 0),
   "useful" integer NOT NULL DEFAULT 0 CHECK ("useful" >= 0),
@@ -80,6 +80,11 @@ CREATE TABLE tip (
   "compliment_count" integer NOT NULL DEFAULT 0 CHECK ("compliment_count" >= 0)
 );
 
+CREATE TABLE categorie (
+  "id" integer PRIMARY KEY,
+  "name" varchar NOT NULL
+);
+
 CREATE TABLE business_categorie (
   "business_id" integer NOT NULL REFERENCES business(id),
   "categorie_id" integer NOT NULL REFERENCES categorie(id),
@@ -90,11 +95,6 @@ CREATE TABLE business_categorie (
 CREATE TABLE noise_level (
   "id" integer PRIMARY KEY,
   "level" varchar NOT NULL
-);
-
-CREATE TABLE categorie (
-  "id" integer PRIMARY KEY,
-  "name" varchar NOT NULL
 );
 
 CREATE TABLE music (
