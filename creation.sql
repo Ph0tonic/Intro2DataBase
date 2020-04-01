@@ -9,7 +9,7 @@ CREATE TABLE city (
   "id" integer PRIMARY KEY,
   "state_id" integer NOT NULL REFERENCES "state"(id),
 
-  "name" varchar NOT NULL,
+  "name" varchar NOT NULL
 );
 
 CREATE TABLE "user" (
@@ -50,7 +50,7 @@ CREATE TABLE business (
   "code" varchar NOT NULL,
 
   "review_count" integer DEFAULT 0 CHECK ("review_count" >= 0),
-  "stars" numeric(3, 2) DEFAULT NULL CHECK ("average_stars" >= 1 AND "average_stars" <= 5)
+  "stars" numeric(3, 2) DEFAULT NULL CHECK ("stars" >= 1 AND "stars" <= 5)
 );
 
 CREATE TABLE review (
@@ -89,12 +89,12 @@ CREATE TABLE business_categorie (
 
 CREATE TABLE noise_level (
   "id" integer PRIMARY KEY,
-  "level" varchar NOT NULL,
+  "level" varchar NOT NULL
 );
 
 CREATE TABLE categorie (
   "id" integer PRIMARY KEY,
-  "name" varchar NOT NULL,
+  "name" varchar NOT NULL
 );
 
 CREATE TABLE music (
@@ -106,7 +106,7 @@ CREATE TABLE music (
   "jukebox" boolean NOT NULL DEFAULT false,
   "live" boolean NOT NULL DEFAULT false,
   "video" boolean NOT NULL DEFAULT false,
-  "karaoke" boolean NOT NULL DEFAULT false,
+  "karaoke" boolean NOT NULL DEFAULT false
 );
 
 CREATE TABLE business_parking (
@@ -115,7 +115,7 @@ CREATE TABLE business_parking (
   "street" boolean NOT NULL DEFAULT false,
   "validated" boolean NOT NULL DEFAULT false,
   "lot" boolean NOT NULL DEFAULT false,
-  "valet" boolean NOT NULL DEFAULT false,
+  "valet" boolean NOT NULL DEFAULT false
 );
 
 CREATE TABLE ambience (
@@ -129,7 +129,7 @@ CREATE TABLE ambience (
   "trendy" boolean NOT NULL DEFAULT false,
   "upscale" boolean NOT NULL DEFAULT false,
   "classy" boolean NOT NULL DEFAULT false,
-  "casual" boolean NOT NULL DEFAULT false,
+  "casual" boolean NOT NULL DEFAULT false
 );
 
 CREATE TABLE good_for_meal (
@@ -139,7 +139,7 @@ CREATE TABLE good_for_meal (
   "latenight" boolean NOT NULL DEFAULT false,
   "lunch" boolean NOT NULL DEFAULT false,
   "dinner" boolean NOT NULL DEFAULT false,
-  "brunch" boolean NOT NULL DEFAULT false,
+  "brunch" boolean NOT NULL DEFAULT false
 );
 
 CREATE TABLE dietary_restrictions (
@@ -151,14 +151,14 @@ CREATE TABLE dietary_restrictions (
   "kosher" boolean NOT NULL DEFAULT false,
   "halal" boolean NOT NULL DEFAULT false,
   "soy-free" boolean NOT NULL DEFAULT false,
-  "vegetarian" boolean NOT NULL DEFAULT false,
+  "vegetarian" boolean NOT NULL DEFAULT false
 );
 
 CREATE TABLE are_friends (
   "user_id_1" integer REFERENCES "user"(id),
   "user_id_2" integer REFERENCES "user"(id),
 
-  PRIMARY KEY ("user_id_1", "user_id_2"),
+  PRIMARY KEY ("user_id_1", "user_id_2")
 );
 ALTER TABLE are_friends ADD CONSTRAINT "user_id_1" check("user_id_1" <> "user_id_2");
 ALTER TABLE are_friends ADD CONSTRAINT "user_id_2" check("user_id_1" <> "user_id_2");
@@ -175,5 +175,5 @@ CREATE TABLE schedule (
   "start_at" time NOT NULL,
   "end_at" time NOT NULL,
 
-  PRIMARY KEY ("id", "business_id", "day_id"),
+  PRIMARY KEY ("id", "business_id", "day_id")
 );
