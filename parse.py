@@ -1,8 +1,20 @@
 import pandas as pd
+import numpy as np
 
-business_file = 'yelp_academic_dataset_business.csv'
-review_file = 'yelp_academic_dataset_review.csv'
-tip_file = 'yelp_academic_dataset_tip.csv'
-user_file = 'yelp_academic_dataset_user.csv'
 
-# df = pd.read_csv('data_in.csv', names=['Label','Requirements'], skiprows=1) # This assumes and skips the header row ('TSD' in your question)
+generic = lambda x: ast.literal_eval(x)
+conv = {'friends': generic}
+
+user = pd.read_csv('csv_files/yelp_academic_dataset_user.csv',converters=conv)
+#business = pd.read_csv('csv_files/yelp_academic_dataset_business.csv')
+#review = pd.read_csv('csv_files/yelp_academic_dataset_review.csv')
+#tip = pd.read_csv('csv_files/yelp_academic_dataset_tip_transposed.csv')
+
+
+
+# PARSE USER
+user_ids = user['user_id'].reset_index().set_index('user_id')['index'].to_dict()
+
+user_table = user
+friends_table = user['friends'].map(lambda friends: list(map(lambda x: user_ids[x],friends)))
+elite_table = user[user['elite'].map(lambda x:type(x))==type("")]['elite'].map(lambda e:list(map(lambda x:int(x),e.split(","))))

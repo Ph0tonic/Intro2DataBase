@@ -142,17 +142,21 @@ CREATE TABLE good_for_meal (
   "brunch" boolean NOT NULL DEFAULT false
 );
 
+/* TODO: Remove weak entity to create an n-n relation */
 CREATE TABLE dietary_restrictions (
   "id" integer PRIMARY KEY REFERENCES business(id),
-
-  "dairy-free" boolean NOT NULL DEFAULT false,
-  "gluten-free" boolean NOT NULL DEFAULT false,
-  "vegan" boolean NOT NULL DEFAULT false,
-  "kosher" boolean NOT NULL DEFAULT false,
-  "halal" boolean NOT NULL DEFAULT false,
-  "soy-free" boolean NOT NULL DEFAULT false,
-  "vegetarian" boolean NOT NULL DEFAULT false
+  "name" varchar NOT NULL,
+  "value" boolean NOT NULL
 );
+/* Values :
+  dairy-free
+  gluten-free
+  vegan
+  kosher
+  halal
+  soy-free
+  vegetarian
+*/
 
 CREATE TABLE are_friends (
   "user_id_1" integer REFERENCES "user"(id),

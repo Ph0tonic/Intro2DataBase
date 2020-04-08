@@ -74,5 +74,4 @@ from {
     group by b.id
 };
 
-
 -- 12. Find the businesses (show 'name', 'stars', 'review count') in the city of Las Vegas possessing 'valet' parking and open between '19:00' and '23:00' hours on a Friday.
