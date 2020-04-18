@@ -12,6 +12,28 @@ CREATE TABLE city (
   "name" varchar NOT NULL
 );
 
+CREATE TABLE postal_code (
+  "id" integer PRIMARY KEY,
+  "city_id" integer NOT NULL REFERENCES "city"(id),
+
+  "postal_code" integer NOT NULL
+)
+
+CREATE TABLE business (
+  "id" integer PRIMARY KEY,
+
+  "postal_code_id" integer NOT NULL REFERENCES "postal_code"(id),
+  "address" varchar NOT NULL,
+  "latitude" float NOT NULL,
+  "longitude" float NOT NULL,
+
+  "name" varchar NOT NULL,
+  "is_open" boolean,
+
+  "review_count" integer DEFAULT 0 CHECK ("review_count" >= 0),
+  "stars" numeric(3, 2) DEFAULT NULL CHECK ("stars" >= 1 AND "stars" <= 5)
+);
+
 CREATE TABLE "user" (
   "id" integer PRIMARY KEY,
 
@@ -36,21 +58,6 @@ CREATE TABLE "user" (
   "useful" integer NOT NULL DEFAULT 0 CHECK ("useful" >= 0),
   "average_stars" numeric(3, 2) DEFAULT NULL CHECK ("average_stars" >= 1 AND "average_stars" <= 5), 
   "review_count" integer NOT NULL DEFAULT 0 CHECK ("review_count" >= 0)
-);
-
-CREATE TABLE business (
-  "id" integer PRIMARY KEY,
-  "city_id" integer NOT NULL REFERENCES city(id),
-
-  "name" varchar NOT NULL,
-  "address" varchar NOT NULL,
-  "is_open" boolean,
-  "latitude" varchar NOT NULL,
-  "longitude" varchar NOT NULL,
-  "code" varchar NOT NULL,
-
-  "review_count" integer DEFAULT 0 CHECK ("review_count" >= 0),
-  "stars" numeric(3, 2) DEFAULT NULL CHECK ("stars" >= 1 AND "stars" <= 5)
 );
 
 CREATE TABLE review (
