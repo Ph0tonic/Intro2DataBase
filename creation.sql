@@ -1,4 +1,3 @@
-
 CREATE TABLE "state" (
   "id" integer PRIMARY KEY,
 
@@ -7,14 +6,14 @@ CREATE TABLE "state" (
 
 CREATE TABLE city (
   "id" integer PRIMARY KEY,
-  "state_id" integer NOT NULL REFERENCES "state"(id),
+  "state_id" integer NOT NULL REFERENCES "state"(id) ON DELETE CASCADE,
 
   "name" varchar NOT NULL
 );
 
 CREATE TABLE postal_code (
   "id" integer PRIMARY KEY,
-  "city_id" integer NOT NULL REFERENCES "city"(id),
+  "city_id" integer NOT NULL REFERENCES "city"(id) ON DELETE CASCADE,
 
   "postal_code" varchar NOT NULL
 );
@@ -22,7 +21,7 @@ CREATE TABLE postal_code (
 CREATE TABLE business (
   "id" integer PRIMARY KEY,
 
-  "postal_code_id" integer NOT NULL REFERENCES "postal_code"(id),
+  "postal_code_id" integer NOT NULL REFERENCES "postal_code"(id) ON DELETE CASCADE,
   "address" varchar NOT NULL,
   "latitude" float NOT NULL,
   "longitude" float NOT NULL,
@@ -60,7 +59,7 @@ CREATE TABLE "user" (
 );
 
 CREATE TABLE "elit_years" (
-  "user_id" integer NOT NULL REFERENCES "user"(id),
+  "user_id" integer NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   "year" INTEGER NOT NULL,
 
   PRIMARY KEY ("user_id", "year")
@@ -99,8 +98,8 @@ CREATE TABLE categorie (
 );
 
 CREATE TABLE business_categorie (
-  "business_id" integer NOT NULL REFERENCES business(id),
-  "categorie_id" integer NOT NULL REFERENCES categorie(id),
+  "business_id" integer NOT NULL REFERENCES business(id) ON DELETE CASCADE,
+  "categorie_id" integer NOT NULL REFERENCES categorie(id) ON DELETE CASCADE,
 
   PRIMARY KEY (business_id, categorie_id)
 );
@@ -110,56 +109,88 @@ CREATE TABLE noise_level (
   "level" varchar NOT NULL
 );
 
-CREATE TABLE music (
-  "id" integer PRIMARY KEY REFERENCES business(id),
+CREATE TABLE music_business_relation (
+  "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
+  "music_id" integer REFERENCES music(id) ON DELETE CASCADE
+);
 
-  "dj" boolean NOT NULL DEFAULT false,
-  "background_music" boolean NOT NULL DEFAULT false,
-  "no_music" boolean NOT NULL DEFAULT false,
-  "jukebox" boolean NOT NULL DEFAULT false,
-  "live" boolean NOT NULL DEFAULT false,
-  "video" boolean NOT NULL DEFAULT false,
-  "karaoke" boolean NOT NULL DEFAULT false
+CREATE TABLE music (
+  "id" integer PRIMARY KEY,
+  "name" varchar NOT NULL
+);
+/* Values :
+  dj
+  background_music
+  no_music
+  jukebox
+  live
+  video
+  karaoke
+*/
+
+CREATE TABLE parking_business_relation (
+  "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
+  "parking_id" integer REFERENCES business_parking(id) ON DELETE CASCADE
 );
 
 CREATE TABLE business_parking (
-  "id" integer PRIMARY KEY REFERENCES business(id),
-  "garage" boolean NOT NULL DEFAULT false,
-  "street" boolean NOT NULL DEFAULT false,
-  "validated" boolean NOT NULL DEFAULT false,
-  "lot" boolean NOT NULL DEFAULT false,
-  "valet" boolean NOT NULL DEFAULT false
+  "id" integer PRIMARY KEY,
+  "name" varchar NOT NULL
+);
+/* Values :
+  garage
+  street
+  validated
+  lot
+  valet
+*/
+
+CREATE TABLE ambience_business_relation (
+  "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
+  "ambience_id" integer REFERENCES ambience(id) ON DELETE CASCADE
 );
 
 CREATE TABLE ambience (
-  "id" integer PRIMARY KEY REFERENCES business(id),
+  "id" integer PRIMARY KEY,
+  "name" varchar NOT NULL
+);
+/* Values :
+  touristy
+  hipster
+  romantic
+  divey
+  intimate
+  trendy
+  upscale
+  classy
+  casual
+*/
 
-  "touristy" boolean NOT NULL DEFAULT false,
-  "hipster" boolean NOT NULL DEFAULT false,
-  "romantic" boolean NOT NULL DEFAULT false,
-  "divey" boolean NOT NULL DEFAULT false,
-  "intimate" boolean NOT NULL DEFAULT false,
-  "trendy" boolean NOT NULL DEFAULT false,
-  "upscale" boolean NOT NULL DEFAULT false,
-  "classy" boolean NOT NULL DEFAULT false,
-  "casual" boolean NOT NULL DEFAULT false
+CREATE TABLE good_for_meal_business_relation (
+  "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
+  "good_for_meal_id" integer REFERENCES good_for_meal(id) ON DELETE CASCADE
 );
 
 CREATE TABLE good_for_meal (
-  "id" integer PRIMARY KEY REFERENCES business(id),
-  
-  "dessert" boolean NOT NULL DEFAULT false,
-  "latenight" boolean NOT NULL DEFAULT false,
-  "lunch" boolean NOT NULL DEFAULT false,
-  "dinner" boolean NOT NULL DEFAULT false,
-  "brunch" boolean NOT NULL DEFAULT false
+  "id" integer PRIMARY KEY,
+  "name" varchar NOT NULL
+);
+/* Values :
+  dessert
+  latenight
+  lunch
+  dinner
+  brunch
+*/
+
+CREATE TABLE dietary_restrictions_business_relation (
+  "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
+  "dietary_restrictions_id" integer REFERENCES dietary_restrictions(id) ON DELETE CASCADE
 );
 
-/* TODO: Remove weak entity to create an n-n relation */
 CREATE TABLE dietary_restrictions (
-  "id" integer PRIMARY KEY REFERENCES business(id),
-  "name" varchar NOT NULL,
-  "value" boolean NOT NULL
+  "id" integer PRIMARY KEY,
+  "name" varchar NOT NULL
 );
 /* Values :
   dairy-free
@@ -167,7 +198,7 @@ CREATE TABLE dietary_restrictions (
   vegan
   kosher
   halal
-  soy-free
+  soy-free1
   vegetarian
 */
 
@@ -186,11 +217,10 @@ CREATE TABLE day (
 );
 
 CREATE TABLE schedule (
-  "id" integer NOT NULL UNIQUE, 
-  "business_id" integer REFERENCES business(id),
-  "day_id" integer REFERENCES day(id),
+  "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
+  "day_id" integer REFERENCES day(id) ON DELETE CASCADE,
   "start_at" time NOT NULL,
   "end_at" time NOT NULL,
 
-  PRIMARY KEY ("id", "business_id", "day_id")
+  PRIMARY KEY (business_id", "day_id")
 );
