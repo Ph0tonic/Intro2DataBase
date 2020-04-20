@@ -52,12 +52,18 @@ CREATE TABLE "user" (
   "compliment_profile" integer NOT NULL DEFAULT 0 CHECK ("compliment_profile" >= 0),
   "compliment_writer" integer NOT NULL DEFAULT 0 CHECK ("compliment_writer" >= 0),
   "cool" integer NOT NULL DEFAULT 0 CHECK ("cool" >= 0),
-  "elite" integer NOT NULL DEFAULT 0 CHECK ("elite" >= 0), --TODO: wrong
   "fans" integer NOT NULL DEFAULT 0 CHECK ("fans" >= 0),
   "funny" integer NOT NULL DEFAULT 0 CHECK ("funny" >= 0),
   "useful" integer NOT NULL DEFAULT 0 CHECK ("useful" >= 0),
   "average_stars" numeric(3, 2) DEFAULT NULL CHECK ("average_stars" >= 1 AND "average_stars" <= 5), 
   "review_count" integer NOT NULL DEFAULT 0 CHECK ("review_count" >= 0)
+);
+
+CREATE TABLE "elit_years" (
+  "user_id" integer NOT NULL REFERENCES "user"(id),
+  "year" INTEGER NOT NULL,
+
+  PRIMARY KEY ("user_id", "year")
 );
 
 CREATE TABLE review (
