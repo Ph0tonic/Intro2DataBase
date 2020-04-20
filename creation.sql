@@ -68,7 +68,7 @@ CREATE TABLE review (
   PRIMARY KEY (id, business_id),
 
   "date" date NOT NULL,
-  "text" varchar NOT NULL,
+  "text" text NOT NULL,
   "cool" integer NOT NULL DEFAULT 0 CHECK ("cool" >= 0),
   "funny" integer NOT NULL DEFAULT 0 CHECK ("funny" >= 0),
   "stars" integer NOT NULL CHECK ("average_stars" >= 1 AND "average_stars" <= 5),
