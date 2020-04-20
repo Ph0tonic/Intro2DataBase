@@ -131,3 +131,6 @@ dmypy.json
 
 # cvs
 csv_files
+
+db
+

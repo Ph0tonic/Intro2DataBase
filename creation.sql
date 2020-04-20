@@ -17,7 +17,7 @@ CREATE TABLE postal_code (
   "city_id" integer NOT NULL REFERENCES "city"(id),
 
   "postal_code" integer NOT NULL
-)
+);
 
 CREATE TABLE business (
   "id" integer PRIMARY KEY,
@@ -77,7 +77,7 @@ CREATE TABLE review (
   "text" text NOT NULL,
   "cool" integer NOT NULL DEFAULT 0 CHECK ("cool" >= 0),
   "funny" integer NOT NULL DEFAULT 0 CHECK ("funny" >= 0),
-  "stars" integer NOT NULL CHECK ("average_stars" >= 1 AND "average_stars" <= 5),
+  "stars" integer NOT NULL CHECK ("stars" >= 1 AND "stars" <= 5),
   "useful" integer NOT NULL DEFAULT 0 CHECK ("useful" >= 0)
 );
 
