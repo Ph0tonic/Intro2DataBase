@@ -16,7 +16,7 @@ CREATE TABLE postal_code (
   "id" integer PRIMARY KEY,
   "city_id" integer NOT NULL REFERENCES "city"(id),
 
-  "postal_code" integer NOT NULL
+  "postal_code" varchar NOT NULL
 );
 
 CREATE TABLE business (
