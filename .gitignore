@@ -132,5 +132,7 @@ dmypy.json
 # cvs
 csv_files
 
+# db related files
 db
+logfile
 

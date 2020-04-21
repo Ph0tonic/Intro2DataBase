@@ -1,0 +1,3 @@
+psql postgres -c "DROP DATABASE introdb;"
+psql postgres -c "CREATE DATABASE introdb;"
+psql introdb -f creation.sql 
