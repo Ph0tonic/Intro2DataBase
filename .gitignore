@@ -131,6 +131,7 @@ dmypy.json
 
 # cvs
 csv_files
+generated/*.csv
 
 # db related files
 db

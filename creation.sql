@@ -49,7 +49,6 @@ CREATE TABLE "user" (
 
   "name" varchar NOT NULL,
   "yelping_since" date NOT NULL,
-  "compliment_count" integer NOT NULL DEFAULT 0 CHECK ("compliment_count" >= 0),
   "compliment_cool" integer NOT NULL DEFAULT 0 CHECK ("compliment_cool" >= 0),
   "compliment_cute" integer NOT NULL DEFAULT 0 CHECK ("compliment_cute" >= 0),
   "compliment_funny" integer NOT NULL DEFAULT 0 CHECK ("compliment_funny" >= 0),
@@ -69,7 +68,7 @@ CREATE TABLE "user" (
   "review_count" integer NOT NULL DEFAULT 0 CHECK ("review_count" >= 0)
 );
 
-CREATE TABLE "elit_years" (
+CREATE TABLE "elite_years" (
   "user_id" integer NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   "year" INTEGER NOT NULL,
 
