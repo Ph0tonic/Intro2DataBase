@@ -5,22 +5,14 @@ CREATE TABLE "state" (
 
 CREATE TABLE city (
   "id" integer PRIMARY KEY,
-  "name" varchar NOT NULL
-);
-
-CREATE TABLE city_state_relation (
   "state_id" integer NOT NULL REFERENCES "state"(id) ON DELETE CASCADE,
-  "city_id" integer UNIQUE NOT NULL REFERENCES "city"(id) ON DELETE CASCADE
+  "name" varchar NOT NULL
 );
 
 CREATE TABLE postal_code (
   "id" integer PRIMARY KEY,
-  "postal_code" varchar NOT NULL
-);
-
-CREATE TABLE postal_code_city_relation (
   "city_id" integer NOT NULL REFERENCES "city"(id) ON DELETE CASCADE,
-  "postal_code_id" integer UNIQUE NOT NULL REFERENCES "postal_code"(id) ON DELETE CASCADE
+  "postal_code" varchar NOT NULL
 );
 
 CREATE TABLE business (
@@ -33,7 +25,7 @@ CREATE TABLE business (
   "stars" numeric(3, 2) DEFAULT NULL CHECK ("stars" >= 1 AND "stars" <= 5)
 );
 
-CREATE TABLE business_postal_code_relation (
+CREATE TABLE business_locations (
   "postal_code_id" integer NOT NULL REFERENCES "postal_code"(id) ON DELETE CASCADE,
   "business_id" integer UNIQUE NOT NULL REFERENCES "business"(id) ON DELETE CASCADE,
 
