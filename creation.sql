@@ -31,7 +31,7 @@ CREATE TABLE business_locations (
 
   PRIMARY KEY ("postal_code_id", "business_id"),
 
-  "address" varchar NOT NULL,
+  "address" varchar,
   "latitude" float NOT NULL,
   "longitude" float NOT NULL
 );
