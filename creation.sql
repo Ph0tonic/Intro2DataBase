@@ -15,6 +15,11 @@ CREATE TABLE postal_code (
   "postal_code" varchar NOT NULL
 );
 
+CREATE TABLE noise_level (
+  "id" integer PRIMARY KEY,
+  "level" varchar NOT NULL
+);
+
 CREATE TABLE business (
   "id" integer PRIMARY KEY,
 
@@ -102,11 +107,6 @@ CREATE TABLE business_categorie (
   "categorie_id" integer NOT NULL REFERENCES categorie(id) ON DELETE CASCADE,
 
   PRIMARY KEY (business_id, categorie_id)
-);
-
-CREATE TABLE noise_level (
-  "id" integer PRIMARY KEY,
-  "level" varchar NOT NULL
 );
 
 CREATE TABLE music (
