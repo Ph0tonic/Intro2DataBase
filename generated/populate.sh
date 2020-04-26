@@ -1,14 +1,17 @@
+# Detect the OS and chose the command accordingly
+[ $(uname) == "Darwin" ] && CMD="psql" || CMD="sudo -u postgres psql"
+
 #create the database
-sudo -u postgres psql <<EOF
+$CMD -d postgres <<EOF
 drop database introdb;
 create database introdb;
 \q
 EOF
 #create the tables
-sudo -u postgres psql -d introdb -f ../creation.sql
+$CMD -d introdb -f ../creation.sql
 
 #populate the tables
-sudo -u postgres psql -d introdb <<EOF
+$CMD -d introdb <<EOF
 
 \copy "state"(id,name) FROM 'state.csv' DELIMITER ',' CSV HEADER;
 \copy city(id,name,state_id) FROM 'city.csv' DELIMITER ',' CSV HEADER;
