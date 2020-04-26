@@ -62,7 +62,7 @@ CREATE TABLE "user" (
   "review_count" integer NOT NULL DEFAULT 0 CHECK ("review_count" >= 0)
 );
 
-CREATE TABLE "elite_years" (
+CREATE TABLE elite_years (
   "user_id" integer NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   "year" INTEGER NOT NULL,
 
