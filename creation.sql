@@ -1,18 +1,18 @@
 CREATE TABLE "state" (
   "id" integer PRIMARY KEY,
-  "name" varchar NOT NULL
+  "name" CHAR(3) NOT NULL
 );
 
 CREATE TABLE city (
   "id" integer PRIMARY KEY,
   "state_id" integer NOT NULL REFERENCES "state"(id) ON DELETE CASCADE,
-  "name" varchar NOT NULL
+  "name" varchar
 );
 
 CREATE TABLE postal_code (
   "id" integer PRIMARY KEY,
   "city_id" integer NOT NULL REFERENCES "city"(id) ON DELETE CASCADE,
-  "postal_code" varchar NOT NULL
+  "postal_code" varchar
 );
 
 CREATE TABLE noise_level (
