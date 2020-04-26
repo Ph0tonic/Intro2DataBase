@@ -1,3 +1,13 @@
-psql postgres -c "DROP DATABASE introdb;"
-psql postgres -c "CREATE DATABASE introdb;"
-psql introdb -f creation.sql 
+#!/bin/bash
+DETECTED_OS=$(uname)
+echo $DETECTED_OS
+if [[ "$DETECTED_OS" == "Darwin" ]]; then
+  CMD="psql"
+else
+  CMD="sudo -u postgres psql"
+fi
+
+$CMD -d postgres -c "DROP DATABASE introdb;"
+$CMD -d postgres -c "CREATE DATABASE introdb;"
+$CMD -d introdb -f creation.sql 
+
