@@ -22,7 +22,9 @@ CREATE TABLE business (
   "is_open" boolean,
 
   "review_count" integer DEFAULT 0 CHECK ("review_count" >= 0),
-  "stars" numeric(3, 2) DEFAULT NULL CHECK ("stars" >= 1 AND "stars" <= 5)
+  "stars" numeric(3, 2) DEFAULT NULL CHECK ("stars" >= 1 AND "stars" <= 5),
+
+  "noise_level_id" integer REFERENCES "noise_level"(id) ON DELETE CASCADE
 );
 
 CREATE TABLE business_locations (
@@ -181,6 +183,7 @@ CREATE TABLE good_for_meal_business_relation (
   lunch
   dinner
   brunch
+  breakfast
 */
 
 CREATE TABLE dietary_restrictions (
@@ -198,7 +201,7 @@ CREATE TABLE dietary_restrictions_business_relation (
   vegan
   kosher
   halal
-  soy-free1
+  soy-free
   vegetarian
 */
 
