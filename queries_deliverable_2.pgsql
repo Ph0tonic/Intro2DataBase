@@ -44,10 +44,12 @@ WHERE R.business_id IN (
 -- 6. Display the user id and the number of friends of the top 10 users by number of friends.
 -- Order the results by the number of users descending (the user with the highest number of friends first).
 -- In case there are multiple users with the same number of students, show only top 10.
-SELECT user_id_1, count(user_id_2) as amount_of_friends
-FROM are_friends
-GROUP BY user_id_1
-ORDER BY amount_of_friends DESC
+SELECT U.id, count(*)
+FROM "user" as U, are_friends AS F
+WHERE U.id = F.user_id_1 OR 
+      U.id = F.user_id_2
+GROUP BY U.id
+ORDER BY count(*) DESC
 LIMIT 10;
 
 -- 7. Show the business name, number of stars, and the business review count of the top-5 businesses based on their review count that are currently open in the city of San Diego.
