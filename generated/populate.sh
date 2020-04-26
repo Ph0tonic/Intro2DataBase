@@ -21,8 +21,8 @@ sudo -u postgres psql -d introdb <<EOF
 \copy elite_years(year,user_id) FROM 'elite_years.csv' DELIMITER ',' CSV HEADER;
 \copy are_friends(user_id_2,user_id_1) FROM 'are_friends.csv' DELIMITER ',' CSV HEADER;
 
-\copy review(id,user_id,business_id,date,text,cool,funny,stars,useful) FROM 'review.csv' DELIMITER ',' CSV HEADER;
-\copy tip(id,user_id,business_id,date,text,compliment_count) FROM 'tip.csv' DELIMITER ',' CSV HEADER;
+\copy review(id,business_id,cool,date,funny,stars,text,useful,user_id) FROM 'review.csv' DELIMITER ',' CSV HEADER;
+\copy tip(id,business_id,compliment_count,date,text,user_id) FROM 'tip.csv' DELIMITER ',' CSV HEADER;
 
 \copy categorie(id,name) FROM 'categorie.csv' DELIMITER ',' CSV HEADER;
 \copy music(id,name) FROM 'music.csv' DELIMITER ',' CSV HEADER;

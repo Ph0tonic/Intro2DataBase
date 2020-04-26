@@ -3,6 +3,7 @@ SELECT avg(review_count)
 FROM "user";
 
 -- 2. How many businesses are in the provinces of Québec and Alberta?
+-- false according to pandas
 SELECT count(LR.business_id)
 FROM business_locations as LR 
 WHERE LR.postal_code_id IN (
@@ -11,20 +12,19 @@ WHERE LR.postal_code_id IN (
     WHERE C.state_id in (
         SELECT S.id
         FROM state as S
-        where S.name = 'quebec' OR
-              S.name = 'alberta'
+        where S.name = 'AB' OR
+              S.name = 'QC'
     )
 );
 
 -- 3. What is the maximum number of categories assigned to a business? Show the business name and the previously described count.
-SELECT BID, max(results)
-FROM (
-    SELECT B.id as BID, count(BC.categorie_id) AS results
-    FROM business AS B
-    LEFT JOIN business_categorie AS BC ON BC.business_id = B.id
-    GROUP BY B.id
-) AS innner
-GROUP BY BID;
+
+SELECT B.id as BID, count(BC.categorie_id) AS results
+FROM business AS B
+LEFT JOIN business_categorie AS BC ON BC.business_id = B.id
+GROUP BY B.id
+ORDER BY results DESC
+LIMIT 1;
 
 -- 4. How many businesses are labelled as "Dry Cleaners" or “Dry Cleaning”?
 SELECT count(DISTINCT BC.business_id)
@@ -44,6 +44,8 @@ WHERE R.business_id IN (
 -- 6. Display the user id and the number of friends of the top 10 users by number of friends.
 -- Order the results by the number of users descending (the user with the highest number of friends first).
 -- In case there are multiple users with the same number of students, show only top 10.
+
+--Validated
 SELECT U.id, count(*)
 FROM "user" as U, are_friends AS F
 WHERE U.id = F.user_id_1 OR 
