@@ -237,7 +237,7 @@ CREATE FUNCTION friend_min_trigger() RETURNS trigger AS $friend_min_trigger$
   BEGIN
     -- Qui travaille pour nous si la personne doit payer pour cela ?
     IF NEW.user_id_1 = NEW.user_id_2 THEN
-      RAISE EXCEPTION '% ne peut pas avoir un salaire négatif', NEW.nom_employe;
+      RAISE EXCEPTION '% A user cannot be friend with himself', NEW.user_id_1;
     END IF;
 
     IF NEW.user_id_1 > NEW.user_id_2 THEN
@@ -252,4 +252,3 @@ $friend_min_trigger$ LANGUAGE plpgsql;
 
 CREATE TRIGGER friend_min_trigger BEFORE INSERT OR UPDATE ON are_friends
   FOR EACH ROW EXECUTE PROCEDURE friend_min_trigger();
-
