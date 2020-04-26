@@ -48,7 +48,7 @@ from business as b
 inner join city as c on c.id = b.city_id
 where b.is_open = true
 and c.name = 'San Diego'
-group by b.review_count desc
+order by b.review_count desc
 limit 5;
 
 -- 8. Show the state name and the number of businesses for the state with the highest number of businesses.
