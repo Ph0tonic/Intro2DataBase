@@ -68,11 +68,9 @@ CREATE TABLE "elite_years" (
 );
 
 CREATE TABLE review (
-  "id" integer,
+  "id" integer PRIMARY KEY,
   "user_id" integer NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
-
-  PRIMARY KEY (id, business_id, user_id),
 
   "date" date NOT NULL,
   "text" text NOT NULL,
@@ -208,10 +206,10 @@ CREATE TABLE are_friends (
   "user_id_1" integer REFERENCES "user"(id),
   "user_id_2" integer REFERENCES "user"(id),
 
-  PRIMARY KEY ("user_id_1", "user_id_2")
+  PRIMARY KEY ("user_id_1", "user_id_2"),
+  CONSTRAINT "user_id_1" check("user_id_1" <> "user_id_2"),
+  CONSTRAINT "user_id_2" check("user_id_1" <> "user_id_2")
 );
-ALTER TABLE are_friends ADD CONSTRAINT "user_id_1" check("user_id_1" <> "user_id_2");
-ALTER TABLE are_friends ADD CONSTRAINT "user_id_2" check("user_id_1" <> "user_id_2");
 
 CREATE TABLE day (
   "id" integer PRIMARY KEY,
@@ -226,3 +224,29 @@ CREATE TABLE schedule (
 
   PRIMARY KEY ("business_id", "day_id")
 );
+
+
+/* Triggers */
+
+CREATE FUNCTION friend_min_trigger() RETURNS trigger AS $friend_min_trigger$
+  DECLARE
+    min_user_id integer;
+  BEGIN
+    -- Qui travaille pour nous si la personne doit payer pour cela ?
+    IF NEW.user_id_1 = NEW.user_id_2 THEN
+      RAISE EXCEPTION '% ne peut pas avoir un salaire négatif', NEW.nom_employe;
+    END IF;
+
+    IF NEW.user_id_1 > NEW.user_id_2 THEN
+      min_user_id = NEW.user_id_2;
+      NEW.user_id_2 = NEW.user_id_1;
+      NEW.user_id_1 = min_user_id;
+    END IF;
+
+    RETURN NEW;
+  END;
+$friend_min_trigger$ LANGUAGE plpgsql;
+
+CREATE TRIGGER friend_min_trigger BEFORE INSERT OR UPDATE ON are_friends
+  FOR EACH ROW EXECUTE PROCEDURE friend_min_trigger();
+

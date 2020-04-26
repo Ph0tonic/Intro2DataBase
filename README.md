@@ -47,3 +47,4 @@ et la quitter `\q + ENTER`
 - `\l` to list existing database 
 - `\c introdb` to connect introdb database 
 - `create database introdb;` to create a new database
+- `drop databse introdb` to drop a database
