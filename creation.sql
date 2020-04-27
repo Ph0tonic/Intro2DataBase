@@ -77,7 +77,7 @@ CREATE TABLE elite_years (
 CREATE TABLE review (
   "id" integer,
   "user_id" integer NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
-  "business_id" integer REFERENCES business(id) ON DELETE CASCADE,,
+  "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
 
   PRIMARY KEY (business_id, user_id, id),
 
@@ -92,7 +92,7 @@ CREATE TABLE review (
 CREATE TABLE tip (
   "id" integer,
   "user_id" integer NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
-  "business_id" integer NOT NULL REFERENCES business(id) ON DELETE CASCADE,,
+  "business_id" integer NOT NULL REFERENCES business(id) ON DELETE CASCADE,
 
   PRIMARY KEY (business_id, user_id, id),
 
