@@ -75,9 +75,11 @@ CREATE TABLE elite_years (
 );
 
 CREATE TABLE review (
-  "id" integer PRIMARY KEY,
+  "id" integer,
   "user_id" integer NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
-  "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
+  "business_id" integer REFERENCES business(id) ON DELETE CASCADE,,
+
+  PRIMARY KEY (business_id, user_id, id),
 
   "date" date NOT NULL,
   "text" text NOT NULL,
@@ -88,9 +90,11 @@ CREATE TABLE review (
 );
 
 CREATE TABLE tip (
-  "id" integer PRIMARY KEY,
+  "id" integer,
   "user_id" integer NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
-  "business_id" integer NOT NULL REFERENCES business(id) ON DELETE CASCADE,
+  "business_id" integer NOT NULL REFERENCES business(id) ON DELETE CASCADE,,
+
+  PRIMARY KEY (business_id, user_id, id),
 
   "date" date NOT NULL,
   "text" varchar NOT NULL,
@@ -116,7 +120,9 @@ CREATE TABLE music (
 
 CREATE TABLE music_business_relation (
   "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
-  "music_id" integer REFERENCES music(id) ON DELETE CASCADE
+  "music_id" integer REFERENCES music(id) ON DELETE CASCADE,
+
+  PRIMARY KEY (business_id, music_id)
 );
 /* Values :
   dj
@@ -135,7 +141,9 @@ CREATE TABLE business_parking (
 
 CREATE TABLE parking_business_relation (
   "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
-  "parking_id" integer REFERENCES business_parking(id) ON DELETE CASCADE
+  "parking_id" integer REFERENCES business_parking(id) ON DELETE CASCADE,
+
+  PRIMARY KEY (business_id, parking_id)
 );
 /* Values :
   garage
@@ -152,7 +160,9 @@ CREATE TABLE ambience (
 
 CREATE TABLE ambience_business_relation (
   "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
-  "ambience_id" integer REFERENCES ambience(id) ON DELETE CASCADE
+  "ambience_id" integer REFERENCES ambience(id) ON DELETE CASCADE,
+
+  PRIMARY KEY (business_id, ambience_id)
 );
 /* Values :
   touristy
@@ -173,7 +183,9 @@ CREATE TABLE good_for_meal (
 
 CREATE TABLE good_for_meal_business_relation (
   "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
-  "good_for_meal_id" integer REFERENCES good_for_meal(id) ON DELETE CASCADE
+  "good_for_meal_id" integer REFERENCES good_for_meal(id) ON DELETE CASCADE,
+
+  PRIMARY KEY (business_id, good_for_meal_id)
 );
 /* Values :
   dessert
@@ -191,7 +203,9 @@ CREATE TABLE dietary_restrictions (
 
 CREATE TABLE dietary_restrictions_business_relation (
   "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
-  "dietary_restrictions_id" integer REFERENCES dietary_restrictions(id) ON DELETE CASCADE
+  "dietary_restrictions_id" integer REFERENCES dietary_restrictions(id) ON DELETE CASCADE,
+
+  PRIMARY KEY (business_id, dietary_restrictions_id)
 );
 /* Values :
   dairy-free
