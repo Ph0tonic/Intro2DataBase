@@ -4,26 +4,25 @@ FROM "user";
 
 -- 2. How many businesses are in the provinces of Québec and Alberta?
 -- false according to pandas
-SELECT count(lr.business_id)
-FROM business_locations as lr
-WHERE lr.postal_code_id IN (
-    SELECT c.state_id 
-    FROM city as c
-    WHERE c.state_id in (
-        SELECT s.id
-        FROM state as S
-        where s.name = 'AB' OR
-              s.name = 'QC'
-    )
-);
-
-SELECT count(BL.business_id)
-FROM business_locations as BL
+-- SELECT count(lr.business_id)
+-- FROM business_locations as lr
+-- WHERE lr.postal_code_id IN (
+--     SELECT c.state_id 
+--     FROM city as c
+--     WHERE c.state_id in (
+--         SELECT s.id
+--         FROM state as S
+--         where s.name = 'AB' OR
+--               s.name = 'QC'
+--     )
+-- );
+SELECT count(bl.business_id)
+FROM business_locations as bl
 INNER JOIN postal_code AS pc on pc.id = bl.postal_code_id
 INNER JOIN city as c on c.id = pc.city_id
 INNER JOIN state as s on s.id = c.state_id
-where S.name = 'AB' OR
-      S.name = 'QC';
+WHERE s.name = 'AB' OR
+      s.name = 'QC';
 
 -- 3. What is the maximum number of categories assigned to a business? Show the business name and the previously described count.
 
@@ -118,20 +117,20 @@ FROM (
 -- 12. Find the businesses (show 'name', 'stars', 'review count') 
 -- in the city of Las Vegas possessing 'valet' parking and open 
 -- between '19:00' and '23:00' hours on a Friday.
-SELECT B.name, B.stars, B.review_count
-FROM business as B
+SELECT b.name, b.stars, b.review_count
+FROM business as b
 --join business with city
-INNER JOIN business_locations as BL on BL.business_id = B.id
-INNER JOIN postal_code as PC on PC.id = BL.postal_code_id
-INNER JOIN city as C on C.id = PC.city_id
+INNER JOIN business_locations as bl on bl.business_id = b.id
+INNER JOIN postal_code as pc on pc.id = bl.postal_code_id
+INNER JOIN city as c on c.id = pc.city_id
 --join business with its parking attribute
 INNER JOIN parking_business_relation AS pbr ON pbr.business_id = b.id
 INNER JOIN business_parking AS bp ON bp.id = pbr.parking_id
 --join business with its schedule on friday
-INNER JOIN schedule AS S ON S.business_id = B.id
-INNER JOIN "day" AS D on d.id = S.day_id
-WHERE C.name = 'Las Vegas' AND
-      BP.name = 'valet' AND
-      D.name = 'Friday' AND
-      S.start_at <= TIME '19:00' AND
-      S.end_at >= TIME '23:00';
+INNER JOIN schedule AS s ON s.business_id = b.id
+INNER JOIN "day" AS d on d.id = s.day_id
+WHERE c.name = 'Las Vegas' AND
+      bp.name = 'valet' AND
+      d.name = 'Friday' AND
+      s.start_at <= TIME '19:00' AND
+      s.end_at >= TIME '23:00';
