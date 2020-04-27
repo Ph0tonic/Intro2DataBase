@@ -1,27 +1,27 @@
 CREATE TABLE "state" (
-  "id" integer PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "name" CHAR(3) NOT NULL
 );
 
 CREATE TABLE city (
-  "id" integer PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "state_id" integer NOT NULL REFERENCES "state"(id) ON DELETE CASCADE,
   "name" varchar
 );
 
 CREATE TABLE postal_code (
-  "id" integer PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "city_id" integer NOT NULL REFERENCES "city"(id) ON DELETE CASCADE,
   "postal_code" varchar
 );
 
 CREATE TABLE noise_level (
-  "id" integer PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "level" varchar NOT NULL
 );
 
 CREATE TABLE business (
-  "id" integer PRIMARY KEY,
+  "id" serial PRIMARY KEY,
 
   "name" varchar NOT NULL,
   "is_open" boolean,
@@ -44,7 +44,7 @@ CREATE TABLE business_locations (
 );
 
 CREATE TABLE "user" (
-  "id" integer PRIMARY KEY,
+  "id" serial PRIMARY KEY,
 
   "name" varchar NOT NULL,
   "yelping_since" date NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE elite_years (
 );
 
 CREATE TABLE review (
-  "id" integer,
+  "id" serial,
   "user_id" integer NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
 
@@ -90,7 +90,7 @@ CREATE TABLE review (
 );
 
 CREATE TABLE tip (
-  "id" integer,
+  "id" serial,
   "user_id" integer NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   "business_id" integer NOT NULL REFERENCES business(id) ON DELETE CASCADE,
 
@@ -102,7 +102,7 @@ CREATE TABLE tip (
 );
 
 CREATE TABLE categorie (
-  "id" integer PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "name" varchar NOT NULL
 );
 
@@ -114,7 +114,7 @@ CREATE TABLE business_categorie (
 );
 
 CREATE TABLE music (
-  "id" integer PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "name" varchar NOT NULL
 );
 
@@ -135,7 +135,7 @@ CREATE TABLE music_business_relation (
 */
 
 CREATE TABLE business_parking (
-  "id" integer PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "name" varchar NOT NULL
 );
 
@@ -154,7 +154,7 @@ CREATE TABLE parking_business_relation (
 */
 
 CREATE TABLE ambience (
-  "id" integer PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "name" varchar NOT NULL
 );
 
@@ -177,7 +177,7 @@ CREATE TABLE ambience_business_relation (
 */
 
 CREATE TABLE good_for_meal (
-  "id" integer PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "name" varchar NOT NULL
 );
 
@@ -197,7 +197,7 @@ CREATE TABLE good_for_meal_business_relation (
 */
 
 CREATE TABLE dietary_restrictions (
-  "id" integer PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "name" varchar NOT NULL
 );
 
@@ -227,7 +227,7 @@ CREATE TABLE are_friends (
 );
 
 CREATE TABLE day (
-  "id" integer PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "name" varchar NOT NULL
 );
 
