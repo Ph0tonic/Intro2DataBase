@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Detect the OS and chose the command accordingly
 [ $(uname) == "Darwin" ] && CMD="psql" || CMD="sudo -u postgres psql"
 

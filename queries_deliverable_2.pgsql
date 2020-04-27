@@ -17,6 +17,14 @@ WHERE LR.postal_code_id IN (
     )
 );
 
+SELECT count(BL.business_id)
+FROM business_locations as BL
+INNER JOIN postal_code AS pc on pc.id = bl.postal_code_id
+INNER JOIN city as c on c.id = pc.city_id
+INNER JOIN state as s on s.id = c.state_id
+where S.name = 'AB' OR
+      S.name = 'QC';
+
 -- 3. What is the maximum number of categories assigned to a business? Show the business name and the previously described count.
 
 SELECT B.id as BID, count(BC.categorie_id) AS results
@@ -112,13 +120,18 @@ FROM (
 -- between '19:00' and '23:00' hours on a Friday.
 SELECT B.name, B.stars, B.review_count
 FROM business as B
+--join business with city
+INNER JOIN business_locations as BL on BL.business_id = B.id
+INNER JOIN postal_code as PC on PC.id = BL.postal_code_id
+INNER JOIN city as C on C.id = PC.city_id
 --join business with its parking attribute
 INNER JOIN parking_business_relation AS PBR ON PBR.business_id = B.id
 INNER JOIN business_parking AS BP ON BP.id = PBR.parking_id
 --join business with its schedule on friday
 INNER JOIN schedule AS S ON S.business_id = B.id
 INNER JOIN "day" AS D on d.id = S.day_id
-WHERE BP.name = 'valet' AND
+WHERE C.name = 'Las Vegas' AND
+      BP.name = 'valet' AND
       D.name = 'Friday' AND
       S.start_at <= TIME '19:00' AND
       S.end_at >= TIME '23:00';
