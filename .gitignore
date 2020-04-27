@@ -137,3 +137,5 @@ generated/*.csv
 db
 logfile
 
+.DS_Store
+G10_milestone*
