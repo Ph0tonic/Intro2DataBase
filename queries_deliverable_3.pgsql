@@ -11,7 +11,6 @@ AND s.name = 'ON'
 AND b.stars > 4.2;
 
 -- 2. What is the average difference in review scores for businesses that are considered "good for dinner" that have noise levels "loud" or "very loud", compared to ones with noise levels "average" or "quiet"
-
 WITH
 b AS (SELECT b.stars AS stars, b.noise_level_id AS noise_level_id
       FROM business AS b
@@ -25,10 +24,10 @@ WHERE b1.noise_level_id IN (
       FROM noise_level AS nl
       WHERE nl.level IN ('loud', 'very loud')
 )
-AND b1.noise_level_id IN (
+AND b2.noise_level_id IN (
       SELECT nl.id as id
       FROM noise_level AS nl
-      WHERE nl.level IN ('loud', 'very loud')
+      WHERE nl.level IN ('average', 'quiet')
 );
 
 -- 3. List the “name”, “star”rating, and “review_count”of the businesses that are tagged as “Irish Pub” and offer “live” music.
