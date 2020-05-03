@@ -47,12 +47,25 @@ AND c.name = 'Irish Pub';
 -- 5. Find the average rating and number of reviews for all businesses which have at least two categories and more than(or equal to)one parking type.
 
 -- 6. What is the fraction of businesses(of the total number of businesses)that are considered "good for late night meals"
+SELECT count(b_late)::decimal/count(b_all) AS good_for_late_fraction
+FROM (
+   SELECT count(*)
+   FROM business
+) AS b_all,
+(
+   SELECT count(*)
+   FROM business AS b
+   INNER JOIN good_for_meal_business_relation AS gfmbr ON gfmbr.business_id = b.id
+   INNER JOIN good_for_meal AS gfm ON gfm.id = gfmbr.good_for_meal_id
+   WHERE gfm.name = 'latenight'
+) AS b_late;
+
 
 -- 7. Find the names of the cities where all businesses are closed on Sundays.
 
 -- 8. Find the ids of the businesses that have been reviewed by more than 1030 unique users.
 
--- 9. Find the top-10 (by thenumber of stars) businesses (business name, number of stars) in the state of California.
+-- 9. Find the top-10 (by the number of stars) businesses (business name, number of stars) in the state of California.
 
 -- 10. Find the top-10 (by number of stars) ids of businesses per state. Show the results per state, in a descending order of number of stars.
 
