@@ -30,35 +30,46 @@ AND b2.noise_level_id IN (
       WHERE nl.level IN ('average', 'quiet')
 );
 
--- 3. List the “name”, “star”rating, and “review_count”of the businesses that are tagged as “Irish Pub” and offer “live” music.
+-- 3. List the “name”, “star” rating, and “review_count” of the businesses that are tagged as “Irish Pub” and offer “live” music.
+SELECT b.name, b.stars, b.review_count
+FROM business AS b
+INNER JOIN music_business_relation AS mbr ON mbr.business_id = b.id
+INNER JOIN music AS m ON m.id = mbr.music_id
+INNER JOIN business_categorie AS bc ON bc.business_id = b.id
+INNER JOIN categorie AS c ON c.id = bc.categorie_id
+WHERE m.name = 'live'
+AND c.name = 'Irish Pub';
 
--- 4. Find the average number of attribute “useful” of the users whose average rating falls in the following 2 ranges:[2-4),[4-5]. Display separately theseresults for elite users vs. regular users(4 values total).
+-- 4. Find the average number of attribute “useful” of the users whose average rating falls in the following 2 ranges:[2-4),[4-5]. Display separately these results for elite users vs. regular users(4 values total).
 
--- 5. Find the average rating and number of reviews for all businesses which have at least two categories and morethan(or equal to)one parking type.
+-- 5. Find the average rating and number of reviews for all businesses which have at least two categories and more than(or equal to)one parking type.
 
--- 6. What is thefraction of businesses(of the total number of businesses)that are considered "good for late night meals"
+-- 6. What is the fraction of businesses(of the total number of businesses)that are considered "good for late night meals"
 
--- 7. Find the names of the cities whereall businesses are closed on Sundays.
+-- 7. Find the names of the cities where all businesses are closed on Sundays.
 
 -- 8. Find the ids of the businesses that have been reviewed by more than 1030 unique users.
 
 -- 9. Find the top-10 (by thenumber of stars) businesses (business name, number of stars) in the state of California.
 
--- 10. Find the top-10 (bynumber of stars) ids of businesses per state. Show the results per state, in a descending order of number of stars.
+-- 10. Find the top-10 (by number of stars) ids of businesses per state. Show the results per state, in a descending order of number of stars.
 
--- 11. Findand displayallthecities that satisfy the following: each business in the city has at least two reviews.
+-- 11. Find and display all the cities that satisfy the following: each business in the city has at least two reviews.
 
 -- 12. Find the number of businesses for which every user that gave the business a positive tip (containing 'awesome') has also given some business a positive tip within the previous day.
 
 -- 13. Find the maximum number of different businesses any user has ever reviewed.
 
--- 14. What is the difference between the average useful ratingof reviewsgiven byelite and non-elite users
+-- 14. What is the difference between the average useful ratingof reviews given by elite and non-elite users
 
 -- 15. List the name of the businesses that are currently 'open', possess a median star rating of 4.5 or above, considered good for 'brunch', and open on weekends.
 
 -- 16. List the 'name', 'star' rating, and 'review_count' of the top-5 businesses in the city of 'los angeles' based on the average 'star' rating that serve both 'vegetarian' and 'vegan' food and open between '14:00' and '16:00' hours. Note: The average star rating should be computed by taking the mean of 'star' ratings provided in each review of this business.
 
 -- 17. Compute the difference between the average 'star' ratings (use the reviews for each business to compute its average star rating) of businesses considered 'good for dinner' with a (1) "divey" and (2) an "upscale" ambience.
+
+
+
 
 -- 1. What is the average review count over all the users?
 SELECT avg(review_count)
