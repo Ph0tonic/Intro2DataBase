@@ -66,24 +66,51 @@ FROM (
 -- 8. Find the ids of the businesses that have been reviewed by more than 1030 unique users.
 
 -- 9. Find the top-10 (by the number of stars) businesses (business name, number of stars) in the state of California.
+SELECT b.name, b.stars
+FROM "state" AS s
+INNER JOIN city AS c ON c.state_id = s.id
+INNER JOIN postal_code AS pc ON pc.city_id = c.id
+INNER JOIN business_locations AS bl ON bl.postal_code_id = pc.id
+INNER JOIN business AS b ON b.id = bl.business_id
+WHERE b.review_count > 6
+AND s.name = 'CA'
+ORDER BY b.stars DESC
+LIMIT 10;
 
 -- 10. Find the top-10 (by number of stars) ids of businesses per state. Show the results per state, in a descending order of number of stars.
 
 -- 11. Find and display all the cities that satisfy the following: each business in the city has at least two reviews.
 
 -- 12. Find the number of businesses for which every user that gave the business a positive tip (containing 'awesome') has also given some business a positive tip within the previous day.
+TODO BASTIEN
 
 -- 13. Find the maximum number of different businesses any user has ever reviewed.
 
--- 14. What is the difference between the average useful ratingof reviews given by elite and non-elite users
+-- 14. What is the difference between the average useful rating of reviews given by elite and non-elite users
 
 -- 15. List the name of the businesses that are currently 'open', possess a median star rating of 4.5 or above, considered good for 'brunch', and open on weekends.
+TODO BASTIEN
 
 -- 16. List the 'name', 'star' rating, and 'review_count' of the top-5 businesses in the city of 'los angeles' based on the average 'star' rating that serve both 'vegetarian' and 'vegan' food and open between '14:00' and '16:00' hours. Note: The average star rating should be computed by taking the mean of 'star' ratings provided in each review of this business.
 
 -- 17. Compute the difference between the average 'star' ratings (use the reviews for each business to compute its average star rating) of businesses considered 'good for dinner' with a (1) "divey" and (2) an "upscale" ambience.
 
 -- 18. Find the number of cities that satisfy the following: the city has at least five businesses and each of the top-5 (in terms of number of reviews) businesses in the city has a minimum of 100 reviews.
+SELECT count(*) as nb_cities
+FROM (
+   SELECT count(c.id)
+   FROM city as c
+   INNER JOIN postal_code AS pc ON pc.city_id = c.id
+   INNER JOIN business_locations AS bl ON bl.postal_code_id = pc.id
+   INNER JOIN (
+      SELECT r.business_id AS id
+      FROM review AS r
+      GROUP BY r.business_id
+      HAVING count(r.id) > 100
+   ) AS b ON b.id = bl.business_id
+   GROUP BY c.id
+   HAVING count(b.id) >= 5
+) AS c;
 
 -- 19. Find the names of the cities that satisfy the following: the combined number of reviews for the top-100 (by reviews) businesses in the city is at least double the combined number of reviews for the rest of the businesses in the city.
 
