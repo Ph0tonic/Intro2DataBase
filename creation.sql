@@ -36,7 +36,7 @@ CREATE TABLE business_locations (
   "postal_code_id" integer NOT NULL REFERENCES "postal_code"(id) ON DELETE CASCADE,
   "business_id" integer UNIQUE NOT NULL REFERENCES "business"(id) ON DELETE CASCADE,
 
-  PRIMARY KEY ("postal_code_id", "business_id"),
+  PRIMARY KEY ("business_id", "postal_code_id"),
 
   "address" varchar,
   "latitude" float NOT NULL,

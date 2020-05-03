@@ -11,6 +11,7 @@ AND s.name = 'ON'
 AND b.stars > 4.2;
 
 -- 2. What is the average difference in review scores for businesses that are considered "good for dinner" that have noise levels "loud" or "very loud", compared to ones with noise levels "average" or "quiet"
+EXPLAIN ANALYZE
 WITH
 b AS (SELECT b.stars AS stars, b.noise_level_id AS noise_level_id
       FROM business AS b
@@ -31,6 +32,7 @@ AND b2.noise_level_id IN (
 );
 
 -- 3. List the “name”, “star” rating, and “review_count” of the businesses that are tagged as “Irish Pub” and offer “live” music.
+EXPLAIN ANALYZE
 SELECT b.name, b.stars, b.review_count
 FROM business AS b
 INNER JOIN music_business_relation AS mbr ON mbr.business_id = b.id
@@ -68,6 +70,17 @@ AND c.name = 'Irish Pub';
 
 -- 17. Compute the difference between the average 'star' ratings (use the reviews for each business to compute its average star rating) of businesses considered 'good for dinner' with a (1) "divey" and (2) an "upscale" ambience.
 
+-- 18. Find the number of cities that satisfy the following: the city has at least five businesses and each of the top-5 (in terms of number of reviews) businesses in the city has a minimum of 100 reviews.
+
+-- 19. Find the names of the cities that satisfy the following: the combined number of reviews for the top-100 (by reviews) businesses in the city is at least double the combined number of reviews for the rest of the businesses in the city.
+
+-- 20. For each of the top-10 (by the number of reviews) businesses, find the top-3 reviewersby activity among those who reviewed the business. Reviewers by activity are defined and ordered as the users that have the highest numbers of total reviews across all the businesses(the users that review the most).
+
+
+
+-- -------------------------------------------
+-- FOLLOWING LINES JUST FOR AUTO-COMPLETION --
+-- -------------------------------------------
 
 
 
