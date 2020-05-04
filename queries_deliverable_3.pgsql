@@ -6,7 +6,7 @@ INNER JOIN city AS c ON c.state_id = s.id
 INNER JOIN postal_code AS pc ON pc.city_id = c.id
 INNER JOIN business_locations AS bl ON bl.postal_code_id = pc.id
 INNER JOIN business AS b ON b.id = bl.business_id
-WHERE b.review_count > 6
+WHERE b.review_count >= 6
 AND s.name = 'ON'
 AND b.stars > 4.2;
 
@@ -43,6 +43,43 @@ WHERE m.name = 'live'
 AND c.name = 'Irish Pub';
 
 -- 4. Find the average number of attribute “useful” of the users whose average rating falls in the following 2 ranges:[2-4),[4-5]. Display separately these results for elite users vs. regular users(4 values total).
+SELECT avg0, avg1, avg2, avg3
+FROM (
+   SELECT avg(u.useful)
+   FROM "user" AS u
+   WHERE 2 <= u.average_stars AND u.average_stars < 4 AND u.id IN (
+      SELECT e.user_id
+      FROM elite_years as e
+      WHERE e.year = 2018 -- Not sure about that
+   )
+) AS avg0,
+(
+   SELECT avg(u.useful)
+   FROM "user" AS u
+   WHERE 2 <= u.average_stars AND u.average_stars < 4 AND u.id NOT IN (
+      SELECT e.user_id
+      FROM elite_years as e
+      WHERE e.year = 2018 -- Not sure about that
+   )
+) AS avg1,
+(
+   SELECT avg(u.useful)
+   FROM "user" AS u
+   WHERE 4 <= u.average_stars AND u.average_stars <= 5 AND u.id IN (
+      SELECT e.user_id
+      FROM elite_years as e
+      WHERE e.year = 2018 -- Not sure about that
+   )
+) AS avg2,
+(
+   SELECT avg(u.useful)
+   FROM "user" AS u
+   WHERE 4 <= u.average_stars AND u.average_stars <= 5 AND u.id NOT IN (
+      SELECT e.user_id
+      FROM elite_years as e
+      WHERE e.year = 2018 -- Not sure about that
+   )
+) AS avg3;
 
 -- 5. Find the average rating and number of reviews for all businesses which have at least two categories and more than(or equal to)one parking type.
 
