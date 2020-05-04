@@ -82,7 +82,21 @@ LIMIT 10;
 -- 11. Find and display all the cities that satisfy the following: each business in the city has at least two reviews.
 
 -- 12. Find the number of businesses for which every user that gave the business a positive tip (containing 'awesome') has also given some business a positive tip within the previous day.
-TODO BASTIEN
+SELECT count(*)
+FROM (
+   SELECT t.business_id, count(t.user_id)
+   FROM tip as t
+   GROUP BY t.business_id
+   
+   INTERSECT
+   
+   SELECT t1.business_id, count(t1.user_id)
+   FROM tip AS t1
+   INNER JOIN tip AS t2 ON t1.user_id = t2.user_id
+   WHERE t1.text like'awesome'
+   AND t1.date::TIMESTAMP - INTERVAL '1 DAY' = t2.date::TIMESTAMP
+   GROUP BY t1.business_id
+) as b;
 
 -- 13. Find the maximum number of different businesses any user has ever reviewed.
 
