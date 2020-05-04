@@ -89,7 +89,25 @@ TODO BASTIEN
 -- 14. What is the difference between the average useful rating of reviews given by elite and non-elite users
 
 -- 15. List the name of the businesses that are currently 'open', possess a median star rating of 4.5 or above, considered good for 'brunch', and open on weekends.
-TODO BASTIEN
+SELECT b.name
+FROM business as b
+INNER JOIN good_for_meal_business_relation AS gfmbr ON gfmbr.business_id = b.id
+INNER JOIN good_for_meal AS gfm ON gfm.id = gfmbr.good_for_meal_id
+INNER JOIN schedule AS s1 ON s1.business_id = b.id
+INNER JOIN schedule AS s2 ON s2.business_id = b.id
+WHERE b.is_open = true
+AND b.stars >= 4.5
+AND gfm.name = 'brunch'
+AND s1.day_id = (
+   SELECT d.id
+   FROM day as d
+   WHERE d.name = 'Saturday'
+)
+AND s2.day_id = (
+   SELECT d.id
+   FROM day as d
+   WHERE d.name = 'Sunday'
+);
 
 -- 16. List the 'name', 'star' rating, and 'review_count' of the top-5 businesses in the city of 'los angeles' based on the average 'star' rating that serve both 'vegetarian' and 'vegan' food and open between '14:00' and '16:00' hours. Note: The average star rating should be computed by taking the mean of 'star' ratings provided in each review of this business.
 
