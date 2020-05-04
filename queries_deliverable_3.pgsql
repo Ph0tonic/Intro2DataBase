@@ -99,6 +99,23 @@ FROM (
 
 
 -- 7. Find the names of the cities where all businesses are closed on Sundays.
+SELECT c.name
+FROM city AS c
+WHERE c.id NOT IN (
+   SELECT DISTINCT pc.city_id
+   FROM postal_code AS pc
+   WHERE pc.id IN (
+      SELECT DISTINCT bl.postal_code_id
+      FROM business_locations AS bl
+      INNER JOIN business AS b ON b.id = bl.business_id
+      INNER JOIN schedule AS s ON b.id = s.business_id
+      WHERE b.is_open AND s.day_id IN (
+         SELECT d.id 
+         FROM day AS d 
+         WHERE d.name LIKE 'Sunday'
+      )
+   )
+);
 
 -- 8. Find the ids of the businesses that have been reviewed by more than 1030 unique users.
 
