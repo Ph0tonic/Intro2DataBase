@@ -112,7 +112,7 @@ WHERE c.id NOT IN (
       WHERE b.is_open AND s.day_id IN (
          SELECT d.id 
          FROM day AS d 
-         WHERE d.name LIKE 'Sunday'
+         WHERE d.name = 'Sunday'
       )
    )
 );
@@ -153,6 +153,12 @@ FROM (
 ) as b;
 
 -- 13. Find the maximum number of different businesses any user has ever reviewed.
+SELECT max(business_reviewed.business_count)
+FROM (
+   SELECT count(DISTINCT r.business_id) AS business_count
+   FROM review AS r 
+   GROUP BY r.user_id
+) AS business_reviewed;
 
 -- 14. What is the difference between the average useful rating of reviews given by elite and non-elite users
 
