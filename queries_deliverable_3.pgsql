@@ -184,6 +184,37 @@ AND s2.day_id = (
 );
 
 -- 16. List the 'name', 'star' rating, and 'review_count' of the top-5 businesses in the city of 'los angeles' based on the average 'star' rating that serve both 'vegetarian' and 'vegan' food and open between '14:00' and '16:00' hours. Note: The average star rating should be computed by taking the mean of 'star' ratings provided in each review of this business.
+SELECT b.name, b.stars, b.review_count
+FROM business AS b 
+INNER JOIN business_locations AS bl ON bl.business_id = b.id 
+INNER JOIN postal_code AS pc ON bl.postal_code_id = pc.id 
+INNER JOIN city AS c ON c.id = pc.city_id 
+INNER JOIN (
+   SELECT r.business_id AS business_id, avg(r.stars) AS avg
+   FROM review AS r 
+   GROUP BY r.business_id
+) AS stars ON stars.business_id = b.id 
+WHERE c.name = 'Los Angeles' AND b.id IN (
+   SELECT dbr.business_id
+   FROM dietary_restrictions_business_relation AS dbr 
+   INNER JOIN dietary_restrictions AS dr ON dbr.dietary_restrictions_id = dr.id 
+   WHERE dr.name = 'vegetarian'
+   
+      INTERSECT
+
+   SELECT dbr.business_id
+   FROM dietary_restrictions_business_relation AS dbr 
+   INNER JOIN dietary_restrictions AS dr ON dbr.dietary_restrictions_id = dr.id 
+   WHERE dr.name = 'vegan'
+
+      INTERSECT
+
+   SELECT s.business_id
+   FROM schedule AS s 
+   WHERE s.start_at <= '14:00' AND '16:00' <= s.end_at
+) AND b.is_open -- Not sure
+ORDER BY stars.avg DESC
+LIMIT 5;
 
 -- 17. Compute the difference between the average 'star' ratings (use the reviews for each business to compute its average star rating) of businesses considered 'good for dinner' with a (1) "divey" and (2) an "upscale" ambience.
 
