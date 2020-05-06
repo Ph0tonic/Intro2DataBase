@@ -106,7 +106,7 @@ WHERE c.id NOT IN (
    WHERE pc.id IN (
       SELECT DISTINCT bl.postal_code_id -- DISTINCT not necessary -> SPEED UP
       FROM business_locations AS bl
-      INNER JOIN business AS b ON b.id = bl.business_id
+      INNER JOIN business AS b ON b.id = bl.business_id -- Not necessary, not require to check is_open
       INNER JOIN schedule AS s ON b.id = s.business_id
       WHERE b.is_open AND s.day_id IN (
          SELECT d.id 
