@@ -6,7 +6,7 @@ INNER JOIN city AS c ON c.state_id = s.id
 INNER JOIN postal_code AS pc ON pc.city_id = c.id
 INNER JOIN business_locations AS bl ON bl.postal_code_id = pc.id
 INNER JOIN business AS b ON b.id = bl.business_id
-WHERE b.review_count > 6
+WHERE b.review_count >= 6
 AND s.name = 'ON'
 AND b.stars > 4.2;
 
@@ -43,6 +43,43 @@ WHERE m.name = 'live'
 AND c.name = 'Irish Pub';
 
 -- 4. Find the average number of attribute “useful” of the users whose average rating falls in the following 2 ranges:[2-4),[4-5]. Display separately these results for elite users vs. regular users(4 values total).
+SELECT avg0, avg1, avg2, avg3
+FROM (
+   SELECT avg(u.useful)
+   FROM "user" AS u
+   WHERE 2 <= u.average_stars AND u.average_stars < 4 AND u.id IN (
+      SELECT e.user_id
+      FROM elite_years as e
+      WHERE e.year = 2018 -- Not sure about that
+   )
+) AS avg0,
+(
+   SELECT avg(u.useful)
+   FROM "user" AS u
+   WHERE 2 <= u.average_stars AND u.average_stars < 4 AND u.id NOT IN (
+      SELECT e.user_id
+      FROM elite_years as e
+      WHERE e.year = 2018 -- Not sure about that
+   )
+) AS avg1,
+(
+   SELECT avg(u.useful)
+   FROM "user" AS u
+   WHERE 4 <= u.average_stars AND u.average_stars <= 5 AND u.id IN (
+      SELECT e.user_id
+      FROM elite_years as e
+      WHERE e.year = 2018 -- Not sure about that
+   )
+) AS avg2,
+(
+   SELECT avg(u.useful)
+   FROM "user" AS u
+   WHERE 4 <= u.average_stars AND u.average_stars <= 5 AND u.id NOT IN (
+      SELECT e.user_id
+      FROM elite_years as e
+      WHERE e.year = 2018 -- Not sure about that
+   )
+) AS avg3;
 
 -- 5. Find the average rating and number of reviews for all businesses which have at least two categories and more than(or equal to)one parking type.
 
@@ -62,6 +99,23 @@ FROM (
 
 
 -- 7. Find the names of the cities where all businesses are closed on Sundays.
+SELECT c.name
+FROM city AS c
+WHERE c.id NOT IN (
+   SELECT DISTINCT pc.city_id
+   FROM postal_code AS pc
+   WHERE pc.id IN (
+      SELECT DISTINCT bl.postal_code_id
+      FROM business_locations AS bl
+      INNER JOIN business AS b ON b.id = bl.business_id
+      INNER JOIN schedule AS s ON b.id = s.business_id
+      WHERE b.is_open AND s.day_id IN (
+         SELECT d.id 
+         FROM day AS d 
+         WHERE d.name = 'Sunday'
+      )
+   )
+);
 
 -- 8. Find the ids of the businesses that have been reviewed by more than 1030 unique users.
 
@@ -100,6 +154,12 @@ FROM (
 ) as b;
 
 -- 13. Find the maximum number of different businesses any user has ever reviewed.
+SELECT max(business_reviewed.business_count)
+FROM (
+   SELECT count(DISTINCT r.business_id) AS business_count
+   FROM review AS r 
+   GROUP BY r.user_id
+) AS business_reviewed;
 
 -- 14. What is the difference between the average useful rating of reviews given by elite and non-elite users
 
@@ -125,6 +185,37 @@ AND s2.day_id = (
 );
 
 -- 16. List the 'name', 'star' rating, and 'review_count' of the top-5 businesses in the city of 'los angeles' based on the average 'star' rating that serve both 'vegetarian' and 'vegan' food and open between '14:00' and '16:00' hours. Note: The average star rating should be computed by taking the mean of 'star' ratings provided in each review of this business.
+SELECT b.name, b.stars, b.review_count
+FROM business AS b 
+INNER JOIN business_locations AS bl ON bl.business_id = b.id 
+INNER JOIN postal_code AS pc ON bl.postal_code_id = pc.id 
+INNER JOIN city AS c ON c.id = pc.city_id 
+INNER JOIN (
+   SELECT r.business_id AS business_id, avg(r.stars) AS avg
+   FROM review AS r 
+   GROUP BY r.business_id
+) AS stars ON stars.business_id = b.id 
+WHERE c.name = 'Los Angeles' AND b.id IN (
+   SELECT dbr.business_id
+   FROM dietary_restrictions_business_relation AS dbr 
+   INNER JOIN dietary_restrictions AS dr ON dbr.dietary_restrictions_id = dr.id 
+   WHERE dr.name = 'vegetarian'
+   
+      INTERSECT
+
+   SELECT dbr.business_id
+   FROM dietary_restrictions_business_relation AS dbr 
+   INNER JOIN dietary_restrictions AS dr ON dbr.dietary_restrictions_id = dr.id 
+   WHERE dr.name = 'vegan'
+
+      INTERSECT
+
+   SELECT s.business_id
+   FROM schedule AS s 
+   WHERE s.start_at <= '14:00' AND '16:00' <= s.end_at
+) AND b.is_open -- Not sure
+ORDER BY stars.avg DESC
+LIMIT 5;
 
 -- 17. Compute the difference between the average 'star' ratings (use the reviews for each business to compute its average star rating) of businesses considered 'good for dinner' with a (1) "divey" and (2) an "upscale" ambience.
 
