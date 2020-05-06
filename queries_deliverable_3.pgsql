@@ -83,7 +83,7 @@ FROM (
 
 -- 5. Find the average rating and number of reviews for all businesses which have at least two categories and more than(or equal to)one parking type.
 
--- 6. What is the fraction of businesses(of the total number of businesses)that are considered "good for late night meals"
+-- 6. What is the fraction of businesses(of the total number of businesses) that are considered "good for late night meals"
 SELECT count(b_late)::decimal/count(b_all) AS good_for_late_fraction
 FROM (
    SELECT count(*)
@@ -163,14 +163,20 @@ FROM (
 -- 14. What is the difference between the average useful rating of reviews given by elite and non-elite users
 
 -- 15. List the name of the businesses that are currently 'open', possess a median star rating of 4.5 or above, considered good for 'brunch', and open on weekends.
+EXPLAIN ANALYZE
 SELECT b.name
-FROM business as b
+FROM (
+   SELECT r.business_id AS id
+   FROM review AS r
+   GROUP BY r.business_id
+   HAVING percentile_disc(0.5) WITHIN GROUP (ORDER BY r.stars) >= 4.5
+) AS b1
+INNER JOIN business AS b ON b.id = b1.id
 INNER JOIN good_for_meal_business_relation AS gfmbr ON gfmbr.business_id = b.id
 INNER JOIN good_for_meal AS gfm ON gfm.id = gfmbr.good_for_meal_id
 INNER JOIN schedule AS s1 ON s1.business_id = b.id
 INNER JOIN schedule AS s2 ON s2.business_id = b.id
 WHERE b.is_open = true
-AND b.stars >= 4.5
 AND gfm.name = 'brunch'
 AND s1.day_id = (
    SELECT d.id
