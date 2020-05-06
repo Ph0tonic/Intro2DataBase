@@ -82,10 +82,11 @@ LIMIT 10;
 -- 11. Find and display all the cities that satisfy the following: each business in the city has at least two reviews.
 
 -- 12. Find the number of businesses for which every user that gave the business a positive tip (containing 'awesome') has also given some business a positive tip within the previous day.
-SELECT count(*)
+SELECT count(*) AS nb_business
 FROM (
    SELECT t.business_id, count(t.user_id)
    FROM tip as t
+   WHERE t.text like'awesome'
    GROUP BY t.business_id
    
    INTERSECT
