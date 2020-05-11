@@ -45,7 +45,10 @@ WHERE r.business_id IN (
     SELECT b.id
     FROM business AS b, dietary_restrictions_business_relation AS drbr1,
          dietary_restrictions_business_relation AS drbr2
-    WHERE b.review_count > 150 AND drbr1.business_id = drbr2.business_id AND b.id = drbr1.business_id
+    WHERE b.review_count > 150
+    AND drbr1.business_id = drbr2.business_id
+    AND b.id = drbr1.business_id
+    AND drbr1.id <> drbr2.id
 );
 
 -- 6. Display the user id and the number of friends of the top 10 users by number of friends.
