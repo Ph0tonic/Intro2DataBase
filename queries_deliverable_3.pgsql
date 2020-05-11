@@ -82,6 +82,25 @@ FROM (
 ) AS avg3;
 
 -- 5. Find the average rating and number of reviews for all businesses which have at least two categories and more than(or equal to)one parking type.
+SELECT B.stars, B.review_count
+FROM business AS b
+WHERE b.id IN 
+    (SELECT businesses.ids
+    FROM (
+        SELECT pbr.business_id AS ids, count(pbr.parking_id) AS amount_relations
+        FROM parking_business_relation AS pbr
+        GROUP BY pbr.business_id
+    ) AS businesses
+    WHERE businesses.amount_relations >= 1
+) AND b.id IN (
+    SELECT businesses.ids
+    FROM (
+        SELECT bc.business_id as ids, count(bc.categorie_id) as amount_relations
+        FROM business_categorie AS bc
+        GROUP BY bc.business_id
+    ) AS businesses
+    where businesses.amount_relations >= 2
+);
 
 -- 6. What is the fraction of businesses(of the total number of businesses) that are considered "good for late night meals"
 SELECT count(b_late)::decimal/count(b_all) AS good_for_late_fraction
@@ -117,6 +136,17 @@ WHERE c.id NOT IN (
 );
 
 -- 8. Find the ids of the businesses that have been reviewed by more than 1030 unique users.
+SELECT b.id 
+FROM business AS b
+WHERE b.id IN (
+    SELECT businesses.ids
+    FROM (
+        SELECT r.business_id as ids, count(r.user_id) as review_amount
+        FROM review AS r
+        GROUP BY r.business_id
+    ) as businesses
+    WHERE businesses.review_amount > 1030
+);
 
 -- 9. Find the top-10 (by the number of stars) businesses (business name, number of stars) in the state of California.
 SELECT b.name, b.stars
@@ -133,6 +163,35 @@ LIMIT 10;
 -- 10. Find the top-10 (by number of stars) ids of businesses per state. Show the results per state, in a descending order of number of stars.
 
 -- 11. Find and display all the cities that satisfy the following: each business in the city has at least two reviews.
+-- version on the attribute
+SELECT c.name
+FROM city AS c
+WHERE NOT EXISTS (
+    SELECT b.id
+    FROM business AS b
+    INNER JOIN business_locations AS bl ON b.id = bl.business_id
+    INNER JOIN postal_code as pc ON bl.postal_code_id = pc.id AND pc.city_id = c.id  
+    WHERE b.review_count < 2  
+);
+
+--version on the relation
+SELECT c.name
+FROM city AS c
+WHERE NOT EXISTS (
+    SELECT b.id
+    FROM business AS b
+    INNER JOIN business_locations AS bl ON b.id = bl.business_id
+    INNER JOIN postal_code AS pc ON bl.postal_code_id = pc.id AND pc.city_id = c.id  
+    WHERE b.id IN (
+        SELECT res.ids
+        FROM (
+            SELECT r.business_id AS ids, count(r.user_id) AS amount
+            FROM review AS r
+            GROUP BY r.business_id
+        ) AS res
+        where res.amount < 2
+    )
+);
 
 -- 12. Find the number of businesses for which every user that gave the business a positive tip (containing 'awesome') has also given some business a positive tip within the previous day.
 SELECT count(*) AS nb_business
@@ -161,6 +220,20 @@ FROM (
 ) AS business_reviewed;
 
 -- 14. What is the difference between the average useful rating of reviews given by elite and non-elite users
+WITH elite_users AS (
+    SELECT DISTINCT ey.user_id
+    FROM elite_years AS ey
+), avg_useful_elite AS (
+    SELECT avg(r.useful) AS average
+    FROM review AS r
+    WHERE r.user_id IN (SELECT * FROM elite_users)
+), avg_useful_non_elite AS (
+    SELECT avg(r.useful) AS average
+    FROM review AS r
+    WHERE r.user_id NOT IN (SELECT * FROM elite_users)
+)
+SELECT abs(aue.average - aune.average)
+FROM avg_useful_elite as aue, avg_useful_non_elite as aune;
 
 -- 15. List the name of the businesses that are currently 'open', possess a median star rating of 4.5 or above, considered good for 'brunch', and open on weekends.
 EXPLAIN ANALYZE
@@ -223,6 +296,37 @@ ORDER BY stars.avg DESC
 LIMIT 5;
 
 -- 17. Compute the difference between the average 'star' ratings (use the reviews for each business to compute its average star rating) of businesses considered 'good for dinner' with a (1) "divey" and (2) an "upscale" ambience.
+-- 17. Compute the difference between the average 'star' ratings 
+-- (use the reviews for each business to compute its average star rating) 
+-- of businesses considered 'good for dinner' with a (1) "divey" and (2) an "upscale" ambience.
+WITH good_for_dinner_business AS (
+    SELECT gfmbr.business_id as id
+    FROM good_for_meal_business_relation as gfmbr
+    INNER JOIN good_for_meal AS gfm ON gfmbr.good_for_meal_id = gfm.id
+    WHERE gfm.name = 'dinner'
+), divey_business_stars AS (
+    SELECT avg(r.stars) AS avg_stars
+    FROM review AS r 
+    WHERE r.business_id IN (SELECT * FROM good_for_dinner_business) AND
+          r.business_id IN(
+              SELECT abr.business_id 
+              FROM ambience_business_relation AS abr
+              INNER JOIN ambience AS a on a.id = abr.ambience_id
+              WHERE a.name = 'divey'
+          )
+), upscale_business_stars AS (
+    SELECT avg(r.stars) AS avg_stars
+    FROM review AS r 
+    WHERE r.business_id IN (SELECT * FROM good_for_dinner_business) AND
+          r.business_id IN(
+              SELECT abr.business_id 
+              FROM ambience_business_relation AS abr
+              INNER JOIN ambience AS a on a.id = abr.ambience_id
+              WHERE a.name = 'upscale'
+          )
+)
+select abs(dbs.avg_stars - ubs.avg_stars)
+from divey_business_stars as dbs, upscale_business_stars as ubs;
 
 -- 18. Find the number of cities that satisfy the following: the city has at least five businesses and each of the top-5 (in terms of number of reviews) businesses in the city has a minimum of 100 reviews.
 SELECT count(*) as nb_cities
