@@ -101,6 +101,22 @@ WHERE b.id IN
     ) AS businesses
     where businesses.amount_relations >= 2
 );
+--proposed with having
+SELECT B.stars, B.review_count
+FROM business AS b
+WHERE b.id IN (
+   SELECT pbr.business_id AS ids
+   FROM parking_business_relation AS pbr
+   GROUP BY pbr.business_id
+   HAVING count(pbr.parking_id) >= 1
+
+   INTERSECT
+
+   SELECT bc.business_id as ids
+   FROM business_categorie AS bc
+   GROUP BY bc.business_id
+   HAVING count(bc.categorie_id) >= 2
+);
 
 -- 6. What is the fraction of businesses(of the total number of businesses) that are considered "good for late night meals"
 SELECT count(b_late)::decimal/count(b_all) AS good_for_late_fraction
