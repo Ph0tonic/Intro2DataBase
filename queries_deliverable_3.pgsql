@@ -203,7 +203,7 @@ WHERE NOT EXISTS (
     )
 );
 -- proposed update :
-SELECT count(c.name)
+SELECT c.name
 FROM city AS c
 WHERE c.id NOT IN (
     SELECT pc.city_id as id
