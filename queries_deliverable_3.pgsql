@@ -173,6 +173,16 @@ WHERE NOT EXISTS (
     INNER JOIN postal_code as pc ON bl.postal_code_id = pc.id AND pc.city_id = c.id  
     WHERE b.review_count < 2  
 );
+--proposed update
+SELECT c.name
+FROM city AS c
+WHERE c.id NOT IN (
+    SELECT pc.city_id
+    FROM business AS b
+    INNER JOIN business_locations AS bl ON b.id = bl.business_id
+    INNER JOIN postal_code as pc ON bl.postal_code_id = pc.id
+    WHERE b.review_count < 2  
+);
 
 --version on the relation
 SELECT c.name
@@ -193,18 +203,17 @@ WHERE NOT EXISTS (
     )
 );
 -- proposed update :
-SELECT c.name
+SELECT count(c.name)
 FROM city AS c
 WHERE c.id NOT IN (
     SELECT pc.city_id as id
-    FROM business AS b
-    INNER JOIN business_locations AS bl ON b.id = bl.business_id
+    FROM business_locations AS bl
     INNER JOIN postal_code AS pc ON bl.postal_code_id = pc.id
-    WHERE b.id IN (
+    WHERE bl.business_id IN (
       SELECT r.business_id AS ids
       FROM review AS r
       GROUP BY r.business_id
-      HAVING count(r.user_id) < 2
+      HAVING count(r.id) < 2
     )
 );
 
