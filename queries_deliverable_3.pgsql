@@ -147,6 +147,15 @@ WHERE b.id IN (
     ) as businesses
     WHERE businesses.review_amount > 1030
 );
+--proposed update with having
+SELECT b.id 
+FROM business AS b
+WHERE b.id IN (
+   SELECT r.business_id as ids
+   FROM review AS r
+   GROUP BY r.business_id
+   HAVING count(r.user_id) > 1030
+);
 
 -- 9. Find the top-10 (by the number of stars) businesses (business name, number of stars) in the state of California.
 SELECT b.name, b.stars
@@ -259,6 +268,41 @@ WITH elite_users AS (
 SELECT abs(aue.average - aune.average)
 FROM avg_useful_elite as aue, avg_useful_non_elite as aune;
 
+-- proposed update (we do not need to force cache for avg_useful_elite)
+WITH elite_users AS (
+    SELECT DISTINCT ey.user_id
+    FROM elite_years AS ey
+)
+SELECT abs(avg_useful_elite.average - avg_useful_non_elite.average)
+FROM (
+    SELECT avg(r.useful) AS average
+    FROM review AS r
+    WHERE r.user_id IN (SELECT * FROM elite_users)
+) AS avg_useful_elite,
+(
+    SELECT avg(r.useful) AS average
+    FROM review AS r
+    WHERE r.user_id NOT IN (SELECT * FROM elite_users)
+) AS avg_useful_non_elite;
+--proposed update v2 (If no cache is force at all then the query is able to manage it even better)
+SELECT abs(avg_useful_elite.average - avg_useful_non_elite.average)
+FROM (
+    SELECT avg(r.useful) AS average
+    FROM review AS r
+    WHERE r.user_id IN (
+      SELECT DISTINCT ey.user_id
+      FROM elite_years AS ey
+   )
+) AS avg_useful_elite,
+(
+    SELECT avg(r.useful) AS average
+    FROM review AS r
+    WHERE r.user_id NOT IN (
+      SELECT DISTINCT ey.user_id
+      FROM elite_years AS ey
+   )
+) AS avg_useful_non_elite;
+
 -- 15. List the name of the businesses that are currently 'open', possess a median star rating of 4.5 or above, considered good for 'brunch', and open on weekends.
 EXPLAIN ANALYZE
 SELECT b.name
@@ -351,6 +395,37 @@ WITH good_for_dinner_business AS (
 )
 select abs(dbs.avg_stars - ubs.avg_stars)
 from divey_business_stars as dbs, upscale_business_stars as ubs;
+
+-- proposed update (More straightforward and no need of caching all subquery but performance still remaining the same)
+WITH good_for_dinner_business AS (
+    SELECT gfmbr.business_id as id
+    FROM good_for_meal_business_relation as gfmbr
+    INNER JOIN good_for_meal AS gfm ON gfmbr.good_for_meal_id = gfm.id
+    WHERE gfm.name = 'dinner'
+)
+select abs(divey_business_stars.avg_stars - upscale_business_stars.avg_stars)
+from (
+    SELECT avg(r.stars) AS avg_stars
+    FROM review AS r 
+    WHERE r.business_id IN (SELECT * FROM good_for_dinner_business) AND
+          r.business_id IN(
+              SELECT abr.business_id 
+              FROM ambience_business_relation AS abr
+              INNER JOIN ambience AS a on a.id = abr.ambience_id
+              WHERE a.name = 'divey'
+          )
+) AS divey_business_stars,
+(
+    SELECT avg(r.stars) AS avg_stars
+    FROM review AS r 
+    WHERE r.business_id IN (SELECT * FROM good_for_dinner_business) AND
+          r.business_id IN(
+              SELECT abr.business_id 
+              FROM ambience_business_relation AS abr
+              INNER JOIN ambience AS a on a.id = abr.ambience_id
+              WHERE a.name = 'upscale'
+          )
+) AS upscale_business_stars;
 
 -- 18. Find the number of cities that satisfy the following: the city has at least five businesses and each of the top-5 (in terms of number of reviews) businesses in the city has a minimum of 100 reviews.
 SELECT count(*) as nb_cities
