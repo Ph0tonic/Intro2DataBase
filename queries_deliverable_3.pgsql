@@ -1,3 +1,5 @@
+-- Can be usefull :
+-- EXPLAIN ANALYZE
 
 -- 1. What is the total number of businesses in the province of Ontario that have at least 6 reviews and a rating above 4.2
 SELECT count(b.id)
@@ -11,7 +13,6 @@ AND s.name = 'ON'
 AND b.stars > 4.2;
 
 -- 2. What is the average difference in review scores for businesses that are considered "good for dinner" that have noise levels "loud" or "very loud", compared to ones with noise levels "average" or "quiet"
-EXPLAIN ANALYZE
 WITH
 b AS (SELECT b.stars AS stars, b.noise_level_id AS noise_level_id
       FROM business AS b
@@ -32,7 +33,6 @@ AND b2.noise_level_id IN (
 );
 
 -- 3. List the “name”, “star” rating, and “review_count” of the businesses that are tagged as “Irish Pub” and offer “live” music.
-EXPLAIN ANALYZE
 SELECT b.name, b.stars, b.review_count
 FROM business AS b
 INNER JOIN music_business_relation AS mbr ON mbr.business_id = b.id
@@ -190,6 +190,21 @@ WHERE NOT EXISTS (
             GROUP BY r.business_id
         ) AS res
         where res.amount < 2
+    )
+);
+-- proposed update :
+SELECT c.name
+FROM city AS c
+WHERE c.id NOT IN (
+    SELECT pc.city_id as id
+    FROM business AS b
+    INNER JOIN business_locations AS bl ON b.id = bl.business_id
+    INNER JOIN postal_code AS pc ON bl.postal_code_id = pc.id
+    WHERE b.id IN (
+      SELECT r.business_id AS ids
+      FROM review AS r
+      GROUP BY r.business_id
+      HAVING count(r.user_id) < 2
     )
 );
 
