@@ -161,6 +161,17 @@ ORDER BY b.stars DESC
 LIMIT 10;
 
 -- 10. Find the top-10 (by number of stars) ids of businesses per state. Show the results per state, in a descending order of number of stars.
+SELECT br.business_id 
+FROM (
+   SELECT 
+      b.id AS business_id,
+      row_number() OVER(PARTITION BY c.state_id ORDER BY b.stars) AS rank
+   FROM business AS b 
+   INNER JOIN business_locations AS bl ON bl.business_id = b.id 
+   INNER JOIN postal_code AS pc ON pc.id = bl.postal_code_id
+   INNER JOIN city AS c ON c.id = pc.city_id
+) AS br
+WHERE br.rank < 10;
 
 -- 11. Find and display all the cities that satisfy the following: each business in the city has at least two reviews.
 -- version on the attribute
