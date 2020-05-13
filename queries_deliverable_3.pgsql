@@ -186,7 +186,7 @@ ORDER BY b.stars DESC
 LIMIT 10;
 
 -- 10. Find the top-10 (by number of stars) ids of businesses per state. Show the results per state, in a descending order of number of stars.
-SELECT br.business_id 
+SELECT br.business_id -- TODO: Show the result by state -> means showing by state_id from what I understand
 FROM (
    SELECT 
       b.id AS business_id,
