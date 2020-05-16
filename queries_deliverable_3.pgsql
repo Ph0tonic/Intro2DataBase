@@ -190,7 +190,7 @@ SELECT br.business_id -- TODO: Show the result by state -> means showing by stat
 FROM (
    SELECT 
       b.id AS business_id,
-      row_number() OVER(PARTITION BY c.state_id ORDER BY b.stars) AS rank
+      row_number() OVER(PARTITION BY c.state_id ORDER BY b.stars DESC) AS rank
    FROM business AS b 
    INNER JOIN business_locations AS bl ON bl.business_id = b.id 
    INNER JOIN postal_code AS pc ON pc.id = bl.postal_code_id
@@ -472,6 +472,25 @@ FROM (
 ) AS c;
 
 -- 19. Find the names of the cities that satisfy the following: the combined number of reviews for the top-100 (by reviews) businesses in the city is at least double the combined number of reviews for the rest of the businesses in the city.
+-- assumption if there is less than 100 business in a city then this city is included in the result
+WITH c AS (
+   SELECT cr.id, sum(cr.review_count), cr.rank <= 100 AS in_top_100
+   FROM (
+      SELECT 
+         pc.city_id AS "id",
+         b.review_count AS review_count,
+         row_number() OVER(PARTITION BY pc.city_id ORDER BY b.review_count DESC) AS rank 
+      FROM postal_code AS pc
+      INNER JOIN business_locations AS bl ON bl.postal_code_id = pc.id 
+      INNER JOIN business AS b ON bl.business_id = b.id 
+   ) AS cr
+   GROUP BY cr.id, cr.rank <= 100
+)
+SELECT city.name 
+FROM city
+INNER JOIN c AS c1 ON c1.id = city.id
+LEFT JOIN c AS c2 ON c2.id = city.id 
+WHERE c1.sum > 2 * coalesce(c2.sum, 0);
 
 -- 20. For each of the top-10 (by the number of reviews) businesses, find the top-3 reviewersby activity among those who reviewed the business. Reviewers by activity are defined and ordered as the users that have the highest numbers of total reviews across all the businesses(the users that review the most).
 
