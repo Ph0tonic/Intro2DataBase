@@ -19,25 +19,6 @@ b AS (SELECT b.stars AS stars, b.noise_level_id AS noise_level_id
       INNER JOIN good_for_meal_business_relation AS gfmb ON gfmb.business_id = b.id
       INNER JOIN good_for_meal AS gfm ON gfm.id = gfmb.good_for_meal_id
       WHERE gfm.name = 'dinner')
-SELECT abs(avg(b1.stars) - avg(b2.stars)) AS diff_average
-FROM b AS b1, b AS b2
-WHERE b1.noise_level_id IN (
-      SELECT nl.id as id
-      FROM noise_level AS nl
-      WHERE nl.level IN ('loud', 'very loud')
-)
-AND b2.noise_level_id IN (
-      SELECT nl.id as id
-      FROM noise_level AS nl
-      WHERE nl.level IN ('average', 'quiet')
-);
-
-WITH
-b AS (SELECT b.stars AS stars, b.noise_level_id AS noise_level_id
-      FROM business AS b
-      INNER JOIN good_for_meal_business_relation AS gfmb ON gfmb.business_id = b.id
-      INNER JOIN good_for_meal AS gfm ON gfm.id = gfmb.good_for_meal_id
-      WHERE gfm.name = 'dinner')
 SELECT abs(b1.stars_avg - b2.stars_avg) AS diff_average
 FROM (
    SELECT avg(b.stars) AS stars_avg
