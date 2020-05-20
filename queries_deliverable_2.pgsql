@@ -132,7 +132,7 @@ INNER JOIN business_parking AS bp ON bp.id = pbr.parking_id
 --join business with its schedule on friday
 INNER JOIN schedule AS s ON s.business_id = b.id
 INNER JOIN "day" AS d on d.id = s.day_id
-WHERE c.name = 'Las Vegas' AND
+WHERE LOWER(c.name) LIKE '%las vegas%' AND
       bp.name = 'valet' AND
       d.name = 'Friday' AND
       s.start_at <= TIME '19:00' AND

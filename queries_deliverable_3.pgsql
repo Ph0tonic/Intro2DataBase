@@ -68,7 +68,7 @@ FROM (
       FROM elite_years as e
       WHERE e.year = 2018 -- Not sure about that
    )
-) AS avg_elite_45,
+) AS avg_nonelite_24,
 (
    SELECT avg(u.useful)
    FROM "user" AS u
@@ -77,7 +77,7 @@ FROM (
       FROM elite_years as e
       WHERE e.year = 2018 -- Not sure about that
    )
-) AS avg_nonelite_24,
+) AS avg_elite_45,
 (
    SELECT avg(u.useful)
    FROM "user" AS u
@@ -88,6 +88,7 @@ FROM (
    )
 ) AS avg_nonelite_45;
 
+-- TODO CHECK
 WITH
 elite_users_ids AS (
     SELECT DISTINCT e.user_id
@@ -129,6 +130,7 @@ FROM (
 ) AS avg_nonelite_45;
 
 -- 5. Find the average rating and number of reviews for all businesses which have at least two categories and more than(or equal to)one parking type.
+-- TODO Ask assistant about global or local average
 SELECT B.stars, B.review_count
 FROM business AS b
 WHERE b.id IN (
@@ -158,7 +160,7 @@ FROM (
 ) AS b_late;
 
 -- 7. Find the names of the cities where all businesses are closed on Sundays.
-SELECT c.name
+SELECT DISTINCT LOWER(c.name)
 FROM city AS c
 WHERE c.id NOT IN (
    SELECT pc.city_id
@@ -200,10 +202,11 @@ LIMIT 10;
 -- CANDIDATE TO INDEX FOR STATE ...
 
 -- 10. Find the top-10 (by number of stars) ids of businesses per state. Show the results per state, in a descending order of number of stars.
-SELECT br.business_id
+-- Display state abbreviation instead of state_id
+SELECT br.business_id, br.state_id
 FROM (
    SELECT 
-      b.id AS business_id,
+      b.id AS business_id, c.state_id,
       row_number() OVER(PARTITION BY c.state_id ORDER BY b.stars DESC) AS rank
    FROM business AS b 
    INNER JOIN business_locations AS bl ON bl.business_id = b.id 
@@ -213,6 +216,7 @@ FROM (
 WHERE br.rank <= 10;
 
 -- 11. Find and display all the cities that satisfy the following: each business in the city has at least two reviews.
+-- TODO Optimize
 SELECT c.name
 FROM city AS c
 WHERE c.id NOT IN (
@@ -228,7 +232,7 @@ SELECT count(*) AS nb_business
 FROM (
    SELECT t.business_id, count(DISTINCT t.user_id)
    FROM tip as t
-   WHERE t.text like'%awesome%'
+   WHERE LOWER(t.text) like'%awesome%'
    GROUP BY t.business_id
    
    INTERSECT
@@ -236,9 +240,9 @@ FROM (
    SELECT t1.business_id, count(DISTINCT t1.user_id)
    FROM tip AS t1
    INNER JOIN tip AS t2 ON t1.user_id = t2.user_id
-   WHERE t1.text like'%awesome%'
-   AND t2.text like'%awesome%'
-   AND t1.date::TIMESTAMP - INTERVAL '1 DAY' = t2.date::TIMESTAMP
+   WHERE LOWER(t1.text) like'%awesome%'
+   AND LOWER(t2.text) like'%awesome%'
+   AND t1.date::TIMESTAMP::DATE - INTERVAL '1 DAY' = t2.date::TIMESTAMP::DATE
    GROUP BY t1.business_id
 ) as b;
 
@@ -251,7 +255,7 @@ FROM (
 ) AS business_reviewed;
 
 -- 14. What is the difference between the average useful rating of reviews given by elite and non-elite users
-EXPLAIN ANALYZE
+--TODO Take into account actual year ???
 WITH elite_users AS (
     SELECT DISTINCT ey.user_id
     FROM elite_years AS ey
@@ -269,7 +273,6 @@ FROM (
 ) AS avg_useful_non_elite;
 
 --proposed update v2 (If no cache is force at all then the query is able to manage it even better)
-EXPLAIN ANALYZE
 SELECT abs(avg_useful_elite.average - avg_useful_non_elite.average)
 FROM (
     SELECT avg(r.useful) AS average
@@ -327,7 +330,7 @@ WHERE b.id IN (
     FROM business_locations AS bl
     INNER JOIN postal_code AS pc ON bl.postal_code_id = pc.id 
     INNER JOIN city AS c ON c.id = pc.city_id
-    WHERE c.name = 'Los Angeles'
+    WHERE c.name LIKE '%Los Angeles%'
 
     INTERSECT
 
@@ -430,4 +433,4 @@ WHERE city.id IN (
     HAVING count(b.id) <= 100
 );
 
--- 20. For each of the top-10 (by the number of reviews) businesses, find the top-3 reviewersby activity among those who reviewed the business. Reviewers by activity are defined and ordered as the users that have the highest numbers of total reviews across all the businesses(the users that review the most).
+-- 20. For each of the top-10 (by the number of reviews) businesses, find the top-3 reviewers by activity among those who reviewed the business. Reviewers by activity are defined and ordered as the users that have the highest numbers of total reviews across all the businesses(the users that review the most).
