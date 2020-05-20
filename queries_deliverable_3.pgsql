@@ -111,7 +111,7 @@ FROM (
       SELECT *
       FROM elite_users_ids
    )
-) AS avg_elite_45,
+) AS avg_nonelite_24,
 (
    SELECT avg(u.useful)
    FROM "user" AS u
@@ -119,7 +119,7 @@ FROM (
       SELECT *
       FROM elite_users_ids
    )
-) AS avg_nonelite_24,
+) AS avg_elite_45,
 (
    SELECT avg(u.useful)
    FROM "user" AS u
