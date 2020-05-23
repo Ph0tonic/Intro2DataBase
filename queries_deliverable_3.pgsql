@@ -14,29 +14,31 @@ AND b.stars > 4.2;
 
 -- 2. What is the average difference in review scores for businesses that are considered "good for dinner" that have noise levels "loud" or "very loud", compared to ones with noise levels "average" or "quiet"
 WITH
-b AS (SELECT b.stars AS stars, b.noise_level_id AS noise_level_id
-      FROM business AS b
-      INNER JOIN good_for_meal_business_relation AS gfmb ON gfmb.business_id = b.id
-      INNER JOIN good_for_meal AS gfm ON gfm.id = gfmb.good_for_meal_id
-      WHERE gfm.name = 'dinner')
+b AS (
+    SELECT b.stars AS stars, b.noise_level_id AS noise_level_id
+    FROM business AS b
+    INNER JOIN good_for_meal_business_relation AS gfmb ON gfmb.business_id = b.id
+    INNER JOIN good_for_meal AS gfm ON gfm.id = gfmb.good_for_meal_id
+    WHERE gfm.name = 'dinner'
+)
 SELECT abs(b1.stars_avg - b2.stars_avg) AS diff_average
 FROM (
-   SELECT avg(b.stars) AS stars_avg
-   FROM b
-   WHERE b.noise_level_id IN (
-         SELECT nl.id as id
-         FROM noise_level AS nl
-         WHERE nl.level IN ('loud', 'very loud')
-   )
+    SELECT avg(b.stars) AS stars_avg
+    FROM b
+    WHERE b.noise_level_id IN (
+        SELECT nl.id as id
+        FROM noise_level AS nl
+        WHERE nl.level IN ('loud', 'very loud')
+    )
 ) AS b1,
 (
-   SELECT avg(b.stars) AS stars_avg
-   FROM b
-   WHERE b.noise_level_id IN (
-      SELECT nl.id as id
-      FROM noise_level AS nl
-      WHERE nl.level IN ('average', 'quiet')
-   )
+    SELECT avg(b.stars) AS stars_avg
+    FROM b
+    WHERE b.noise_level_id IN (
+        SELECT nl.id as id
+        FROM noise_level AS nl
+        WHERE nl.level IN ('average', 'quiet')
+    )
 ) AS b2;
 
 -- 3. List the “name”, “star” rating, and “review_count” of the businesses that are tagged as “Irish Pub” and offer “live” music.
@@ -52,43 +54,42 @@ AND c.name = 'Irish Pub';
 -- 4. Find the average number of attribute “useful” of the users whose average rating falls in the following 2 ranges:[2-4),[4-5]. Display separately these results for elite users vs. regular users(4 values total).
 SELECT avg_elite_24, avg_elite_45, avg_nonelite_24, avg_nonelite_45
 FROM (
-   SELECT avg(u.useful)
-   FROM "user" AS u
-   WHERE 2 <= u.average_stars AND u.average_stars < 4 AND u.id IN (
-      SELECT e.user_id
-      FROM elite_years as e
-      WHERE e.year = 2018 -- Not sure about that
-   )
+    SELECT avg(u.useful)
+    FROM "user" AS u
+    WHERE 2 <= u.average_stars AND u.average_stars < 4 AND u.id IN (
+        SELECT e.user_id
+        FROM elite_years as e
+        WHERE e.year = 2018 -- Not sure about that
+    )
 ) AS avg_elite_24,
 (
-   SELECT avg(u.useful)
-   FROM "user" AS u
-   WHERE 2 <= u.average_stars AND u.average_stars < 4 AND u.id NOT IN (
-      SELECT e.user_id
-      FROM elite_years as e
-      WHERE e.year = 2018 -- Not sure about that
-   )
+    SELECT avg(u.useful)
+    FROM "user" AS u
+    WHERE 2 <= u.average_stars AND u.average_stars < 4 AND u.id NOT IN (
+        SELECT e.user_id
+        FROM elite_years as e
+        WHERE e.year = 2018 -- Not sure about that
+    )
 ) AS avg_nonelite_24,
 (
-   SELECT avg(u.useful)
-   FROM "user" AS u
-   WHERE 4 <= u.average_stars AND u.average_stars <= 5 AND u.id IN (
-      SELECT e.user_id
-      FROM elite_years as e
-      WHERE e.year = 2018 -- Not sure about that
-   )
+    SELECT avg(u.useful)
+    FROM "user" AS u
+    WHERE 4 <= u.average_stars AND u.average_stars <= 5 AND u.id IN (
+        SELECT e.user_id
+        FROM elite_years as e
+        WHERE e.year = 2018 -- Not sure about that
+    )
 ) AS avg_elite_45,
 (
-   SELECT avg(u.useful)
-   FROM "user" AS u
-   WHERE 4 <= u.average_stars AND u.average_stars <= 5 AND u.id NOT IN (
-      SELECT e.user_id
-      FROM elite_years as e
-      WHERE e.year = 2018 -- Not sure about that
-   )
+    SELECT avg(u.useful)
+    FROM "user" AS u
+    WHERE 4 <= u.average_stars AND u.average_stars <= 5 AND u.id NOT IN (
+        SELECT e.user_id
+        FROM elite_years as e
+        WHERE e.year = 2018 -- Not sure about that
+    )
 ) AS avg_nonelite_45;
 
--- TODO CHECK
 WITH
 elite_users_ids AS (
     SELECT DISTINCT e.user_id
@@ -97,36 +98,36 @@ elite_users_ids AS (
 )
 SELECT avg_elite_24, avg_elite_45, avg_nonelite_24, avg_nonelite_45
 FROM (
-   SELECT avg(u.useful)
-   FROM "user" AS u
-   WHERE 2 <= u.average_stars AND u.average_stars < 4 AND u.id IN (
-      SELECT *
-      FROM elite_users_ids
-   )
+    SELECT avg(u.useful)
+    FROM "user" AS u
+    WHERE 2 <= u.average_stars AND u.average_stars < 4 AND u.id IN (
+        SELECT *
+        FROM elite_users_ids
+    )
 ) AS avg_elite_24,
 (
-   SELECT avg(u.useful)
-   FROM "user" AS u
-   WHERE 2 <= u.average_stars AND u.average_stars < 4 AND u.id NOT IN (
-      SELECT *
-      FROM elite_users_ids
-   )
+    SELECT avg(u.useful)
+    FROM "user" AS u
+    WHERE 2 <= u.average_stars AND u.average_stars < 4 AND u.id NOT IN (
+        SELECT *
+        FROM elite_users_ids
+    )
 ) AS avg_nonelite_24,
 (
-   SELECT avg(u.useful)
-   FROM "user" AS u
-   WHERE 4 <= u.average_stars AND u.average_stars <= 5 AND u.id IN (
-      SELECT *
-      FROM elite_users_ids
-   )
+    SELECT avg(u.useful)
+    FROM "user" AS u
+    WHERE 4 <= u.average_stars AND u.average_stars <= 5 AND u.id IN (
+        SELECT *
+        FROM elite_users_ids
+    )
 ) AS avg_elite_45,
 (
-   SELECT avg(u.useful)
-   FROM "user" AS u
-   WHERE 4 <= u.average_stars AND u.average_stars <= 5 AND u.id NOT IN (
-      SELECT *
-      FROM elite_users_ids
-   )
+    SELECT avg(u.useful)
+    FROM "user" AS u
+    WHERE 4 <= u.average_stars AND u.average_stars <= 5 AND u.id NOT IN (
+        SELECT *
+        FROM elite_users_ids
+    )
 ) AS avg_nonelite_45;
 
 -- 5. Find the average rating and number of reviews for all businesses which have at least two categories and more than(or equal to)one parking type.
@@ -134,58 +135,58 @@ FROM (
 SELECT B.stars, B.review_count
 FROM business AS b
 WHERE b.id IN (
-   SELECT DISTINCT pbr.business_id AS ids
-   FROM parking_business_relation AS pbr
+    SELECT DISTINCT pbr.business_id AS ids
+    FROM parking_business_relation AS pbr
 
-   INTERSECT
+    INTERSECT
 
-   SELECT bc.business_id as ids
-   FROM business_categorie AS bc
-   GROUP BY bc.business_id
-   HAVING count(bc.categorie_id) >= 2
+    SELECT bc.business_id as ids
+    FROM business_categorie AS bc
+    GROUP BY bc.business_id
+    HAVING count(bc.categorie_id) >= 2
 );
 
 -- 6. What is the fraction of businesses (of the total number of businesses) that are considered "good for late night meals"
 SELECT b_late.nb / b_all.nb AS good_for_late_fraction
 FROM (
-   SELECT count(*)::decimal AS nb
-   FROM business
+    SELECT count(*)::decimal AS nb
+    FROM business
 ) AS b_all,
 (
-   SELECT count(*)::decimal as nb
-   FROM business AS b
-   INNER JOIN good_for_meal_business_relation AS gfmbr ON gfmbr.business_id = b.id
-   INNER JOIN good_for_meal AS gfm ON gfm.id = gfmbr.good_for_meal_id
-   WHERE gfm.name = 'latenight'
+    SELECT count(*)::decimal as nb
+    FROM business AS b
+    INNER JOIN good_for_meal_business_relation AS gfmbr ON gfmbr.business_id = b.id
+    INNER JOIN good_for_meal AS gfm ON gfm.id = gfmbr.good_for_meal_id
+    WHERE gfm.name = 'latenight'
 ) AS b_late;
 
 -- 7. Find the names of the cities where all businesses are closed on Sundays.
 SELECT DISTINCT LOWER(c.name)
 FROM city AS c
 WHERE c.id NOT IN (
-   SELECT pc.city_id
-   FROM postal_code AS pc
-   WHERE pc.id IN (
-      SELECT DISTINCT bl.postal_code_id
-      FROM business_locations AS bl
-      INNER JOIN business AS b ON b.id = bl.business_id
-      INNER JOIN schedule AS s ON b.id = s.business_id
-      WHERE b.is_open AND s.day_id IN (
-         SELECT d.id 
-         FROM day AS d 
-         WHERE d.name = 'Sunday'
-      )
-   )
+    SELECT pc.city_id
+    FROM postal_code AS pc
+    WHERE pc.id IN (
+        SELECT DISTINCT bl.postal_code_id
+        FROM business_locations AS bl
+        INNER JOIN business AS b ON b.id = bl.business_id
+        INNER JOIN schedule AS s ON b.id = s.business_id
+        WHERE b.is_open AND s.day_id IN (
+            SELECT d.id 
+            FROM day AS d 
+            WHERE d.name = 'Sunday'
+        )
+    )
 );
 
 -- 8. Find the ids of the businesses that have been reviewed by more than 1030 unique users.
 SELECT b.id 
 FROM business AS b
 WHERE b.id IN (
-   SELECT r.business_id as ids
-   FROM review AS r
-   GROUP BY r.business_id
-   HAVING count(DISTINCT r.user_id) > 1030
+    SELECT r.business_id as ids
+    FROM review AS r
+    GROUP BY r.business_id
+    HAVING count(DISTINCT r.user_id) > 1030
 );
 
 -- 9. Find the top-10 (by the number of stars) businesses (business name, number of stars) in the state of California.
@@ -205,18 +206,17 @@ LIMIT 10;
 -- Display state abbreviation instead of state_id
 SELECT br.business_id, br.state_id
 FROM (
-   SELECT 
-      b.id AS business_id, c.state_id,
-      row_number() OVER(PARTITION BY c.state_id ORDER BY b.stars DESC) AS rank
-   FROM business AS b 
-   INNER JOIN business_locations AS bl ON bl.business_id = b.id 
-   INNER JOIN postal_code AS pc ON pc.id = bl.postal_code_id
-   INNER JOIN city AS c ON c.id = pc.city_id
+    SELECT 
+        b.id AS business_id, c.state_id,
+        row_number() OVER(PARTITION BY c.state_id ORDER BY b.stars DESC) AS rank
+    FROM business AS b 
+    INNER JOIN business_locations AS bl ON bl.business_id = b.id 
+    INNER JOIN postal_code AS pc ON pc.id = bl.postal_code_id
+    INNER JOIN city AS c ON c.id = pc.city_id
 ) AS br
 WHERE br.rank <= 10;
 
 -- 11. Find and display all the cities that satisfy the following: each business in the city has at least two reviews.
--- TODO Optimize
 SELECT c.name
 FROM city AS c
 WHERE c.id NOT IN (
@@ -224,34 +224,34 @@ WHERE c.id NOT IN (
     FROM business AS b
     INNER JOIN business_locations AS bl ON b.id = bl.business_id
     INNER JOIN postal_code as pc ON bl.postal_code_id = pc.id
-    WHERE b.review_count < 2  
+    WHERE b.review_count < 2
 );
 
 -- 12. Find the number of businesses for which every user that gave the business a positive tip (containing 'awesome') has also given some business a positive tip within the previous day.
 SELECT count(*) AS nb_business
 FROM (
-   SELECT t.business_id, count(DISTINCT t.user_id)
-   FROM tip as t
-   WHERE LOWER(t.text) like'%awesome%'
-   GROUP BY t.business_id
-   
-   INTERSECT
-   
-   SELECT t1.business_id, count(DISTINCT t1.user_id)
-   FROM tip AS t1
-   INNER JOIN tip AS t2 ON t1.user_id = t2.user_id
-   WHERE LOWER(t1.text) like'%awesome%'
-   AND LOWER(t2.text) like'%awesome%'
-   AND t1.date::TIMESTAMP::DATE - INTERVAL '1 DAY' = t2.date::TIMESTAMP::DATE
-   GROUP BY t1.business_id
+    SELECT t.business_id, count(DISTINCT t.user_id)
+    FROM tip as t
+    WHERE LOWER(t.text) like'%awesome%'
+    GROUP BY t.business_id
+    
+    INTERSECT
+    
+    SELECT t1.business_id, count(DISTINCT t1.user_id)
+    FROM tip AS t1
+    INNER JOIN tip AS t2 ON t1.user_id = t2.user_id
+    WHERE LOWER(t1.text) like'%awesome%'
+    AND LOWER(t2.text) like'%awesome%'
+    AND t1.date::TIMESTAMP::DATE - INTERVAL '1 DAY' = t2.date::TIMESTAMP::DATE
+    GROUP BY t1.business_id
 ) as b;
 
 -- 13. Find the maximum number of different businesses any user has ever reviewed.
 SELECT max(business_reviewed.business_count)
 FROM (
-   SELECT count(DISTINCT r.business_id) AS business_count
-   FROM review AS r 
-   GROUP BY r.user_id
+    SELECT count(DISTINCT r.business_id) AS business_count
+    FROM review AS r 
+    GROUP BY r.user_id
 ) AS business_reviewed;
 
 -- 14. What is the difference between the average useful rating of reviews given by elite and non-elite users
@@ -278,26 +278,26 @@ FROM (
     SELECT avg(r.useful) AS average
     FROM review AS r
     WHERE r.user_id IN (
-      SELECT DISTINCT ey.user_id
-      FROM elite_years AS ey
+        SELECT DISTINCT ey.user_id
+        FROM elite_years AS ey
    )
 ) AS avg_useful_elite,
 (
     SELECT avg(r.useful) AS average
     FROM review AS r
     WHERE r.user_id NOT IN (
-      SELECT DISTINCT ey.user_id
-      FROM elite_years AS ey
-   )
+        SELECT DISTINCT ey.user_id
+        FROM elite_years AS ey
+    )
 ) AS avg_useful_non_elite;
 
 -- 15. List the name of the businesses that are currently 'open', possess a median star rating of 4.5 or above, considered good for 'brunch', and open on weekends.
 SELECT b.name
 FROM (
-   SELECT r.business_id AS id
-   FROM review AS r
-   GROUP BY r.business_id
-   HAVING percentile_disc(0.5) WITHIN GROUP (ORDER BY r.stars) >= 4.5
+    SELECT r.business_id AS id
+    FROM review AS r
+    GROUP BY r.business_id
+    HAVING percentile_disc(0.5) WITHIN GROUP (ORDER BY r.stars) >= 4.5
 ) AS b1
 INNER JOIN business AS b ON b.id = b1.id
 INNER JOIN good_for_meal_business_relation AS gfmbr ON gfmbr.business_id = b.id
@@ -307,14 +307,14 @@ INNER JOIN schedule AS s2 ON s2.business_id = b.id
 WHERE b.is_open = true
 AND gfm.name = 'brunch'
 AND s1.day_id = (
-   SELECT d.id
-   FROM "day" AS d
-   WHERE d.name = 'Saturday'
+    SELECT d.id
+    FROM "day" AS d
+    WHERE d.name = 'Saturday'
 )
 AND s2.day_id = (
-   SELECT d.id
-   FROM "day" AS d
-   WHERE d.name = 'Sunday'
+    SELECT d.id
+    FROM "day" AS d
+    WHERE d.name = 'Sunday'
 );
 
 -- 16. List the 'name', 'star' rating, and 'review_count' of the top-5 businesses in the city of 'los angeles' based on the average 'star' rating that serve both 'vegetarian' and 'vegan' food and open between '14:00' and '16:00' hours. Note: The average star rating should be computed by taking the mean of 'star' ratings provided in each review of this business.
