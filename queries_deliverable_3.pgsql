@@ -255,10 +255,10 @@ FROM (
 ) AS business_reviewed;
 
 -- 14. What is the difference between the average useful rating of reviews given by elite and non-elite users
---TODO Take into account actual year ???
 WITH elite_users AS (
-    SELECT DISTINCT ey.user_id
-    FROM elite_years AS ey
+    SELECT DISTINCT e.user_id
+    FROM elite_years AS e
+    WHERE e.year = 2018
 )
 SELECT abs(avg_useful_elite.average - avg_useful_non_elite.average)
 FROM (
@@ -278,16 +278,18 @@ FROM (
     SELECT avg(r.useful) AS average
     FROM review AS r
     WHERE r.user_id IN (
-        SELECT DISTINCT ey.user_id
-        FROM elite_years AS ey
+        SELECT DISTINCT e.user_id
+        FROM elite_years AS e
+        WHERE e.year = 2018
    )
 ) AS avg_useful_elite,
 (
     SELECT avg(r.useful) AS average
     FROM review AS r
     WHERE r.user_id NOT IN (
-        SELECT DISTINCT ey.user_id
-        FROM elite_years AS ey
+        SELECT DISTINCT e.user_id
+        FROM elite_years AS e
+        WHERE e.year = 2018
     )
 ) AS avg_useful_non_elite;
 
