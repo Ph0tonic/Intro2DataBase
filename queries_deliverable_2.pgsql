@@ -38,8 +38,8 @@ SELECT count(DISTINCT bc.business_id)
 FROM business_categorie AS bc, categorie AS c
 WHERE bc.categorie_id = c.id
 AND (
-    lower(c.name) = '%dry cleaners%'
-    OR lower(c.name) = '%dry cleaning%'
+    lower(c.name) LIKE '%dry cleaners%'
+    OR lower(c.name) LIKE '%dry cleaning%'
 );
 
 -- 5. Find the overall number of reviews for all the businesses that have more than 150 reviews and have at least 2 (any 2) dietary restriction categories.
@@ -72,11 +72,13 @@ LIMIT 10;
 SELECT b.name, b.stars, b.review_count AS reviews
 FROM business AS b
 where b.is_open = TRUE AND
-      b.id in (
+    b.id in (
         SELECT bl.business_id
         FROM business_locations AS bl, postal_code AS pc, city AS c
-        WHERE bl.postal_code_id = pc.id AND pc.city_id = c.id AND c.name = 'San Diego'
-      )
+        WHERE bl.postal_code_id = pc.id
+        AND pc.city_id = c.id
+        AND c.name = 'San Diego'
+    )
 ORDER BY reviews DESC
 LIMIT 5;
 
@@ -92,10 +94,18 @@ limit 1;
 
 -- 9. Find the total average of “average star” of elite users, grouped by the year in which 
 -- they started to be elite users. Display the required averages next to the appropriate years.
-SELECT min(e.year), avg(u.average_stars)
-FROM elite_years AS e
-INNER JOIN "user" AS u ON u.id = e.user_id
-GROUP BY e.year;
+
+-- TODO: Fix me, this doesn't ensure that you only compute averages of "avg star" of users grouped by the years in which they started being elite.
+-- TODO: Check this new query
+SELECT e.year, avg(u.average_stars)
+FROM "user" AS u
+INNER JOIN (
+    SELECT min(e.year), e.user_id as user_id
+    FROM elite_years AS e
+    GROUP BY u.id;
+) AS e ON e.user_id = u.id
+GROUP BY e.year
+ORDER BY e.year; -- NOT NECESSARY
 
 -- 10. List the names of the top-10 businesses based on the median “star” rating,
 -- that are currently open in the city of New York.
@@ -119,7 +129,6 @@ FROM (
     LEFT JOIN business_categorie AS bc ON bc.business_id = b.id
     GROUP BY b.id
 ) AS categorie_amounts;
-
 
 -- 12. Find the businesses (show 'name', 'stars', 'review count') 
 -- in the city of Las Vegas possessing 'valet' parking and open 

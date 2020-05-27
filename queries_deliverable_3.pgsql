@@ -332,7 +332,7 @@ WHERE b.id IN (
     FROM business_locations AS bl
     INNER JOIN postal_code AS pc ON bl.postal_code_id = pc.id 
     INNER JOIN city AS c ON c.id = pc.city_id
-    WHERE c.name LIKE '%Los Angeles%'
+    WHERE c.name = 'Los Angeles'
 
     INTERSECT
 
