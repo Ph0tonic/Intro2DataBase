@@ -58,12 +58,9 @@ WHERE r.business_id IN (
 -- 6. Display the user id and the number of friends of the top 10 users by number of friends.
 -- Order the results by the number of users descending (the user with the highest number of friends first).
 -- In case there are multiple users with the same number of students, show only top 10.
-
---Validated
 SELECT u.id, count(*)
-FROM "user" AS u, are_friends AS f
-WHERE u.id = f.user_id_1 OR 
-      u.id = f.user_id_2
+FROM "user" AS u
+INNER JOIN are_friends AS f ON u.id = f.user_id_1 OR u.id = f.user_id_2
 GROUP BY u.id
 ORDER BY count(*) DESC
 LIMIT 10;
