@@ -5,15 +5,15 @@
 
 #create the database
 $CMD -d postgres <<EOF
-drop database introdb;
-create database introdb;
+drop database introdb2;
+create database introdb2;
 \q
 EOF
 #create the tables
-$CMD -d introdb -f ../creation.sql
+$CMD -d introdb2 -f ../creation.sql
 
 #populate the tables
-$CMD -d introdb <<EOF
+$CMD -d introdb2 <<EOF
 
 \copy "state"(id,name) FROM 'state.csv' DELIMITER ',' CSV HEADER;
 SELECT setval('state_id_seq', max(id)) FROM "state";

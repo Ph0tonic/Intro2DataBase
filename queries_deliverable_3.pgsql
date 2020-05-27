@@ -90,46 +90,6 @@ FROM (
     )
 ) AS avg_nonelite_45;
 
-WITH
-elite_users_ids AS (
-    SELECT DISTINCT e.user_id
-    FROM elite_years AS e
-    WHERE e.year = 2018
-)
-SELECT avg_elite_24, avg_elite_45, avg_nonelite_24, avg_nonelite_45
-FROM (
-    SELECT avg(u.useful)
-    FROM "user" AS u
-    WHERE 2 <= u.average_stars AND u.average_stars < 4 AND u.id IN (
-        SELECT *
-        FROM elite_users_ids
-    )
-) AS avg_elite_24,
-(
-    SELECT avg(u.useful)
-    FROM "user" AS u
-    WHERE 2 <= u.average_stars AND u.average_stars < 4 AND u.id NOT IN (
-        SELECT *
-        FROM elite_users_ids
-    )
-) AS avg_nonelite_24,
-(
-    SELECT avg(u.useful)
-    FROM "user" AS u
-    WHERE 4 <= u.average_stars AND u.average_stars <= 5 AND u.id IN (
-        SELECT *
-        FROM elite_users_ids
-    )
-) AS avg_elite_45,
-(
-    SELECT avg(u.useful)
-    FROM "user" AS u
-    WHERE 4 <= u.average_stars AND u.average_stars <= 5 AND u.id NOT IN (
-        SELECT *
-        FROM elite_users_ids
-    )
-) AS avg_nonelite_45;
-
 -- 5. Find the average rating and number of reviews for all businesses which have at least two categories and more than(or equal to)one parking type.
 -- TODO Ask assistant about global or local average
 SELECT B.stars, B.review_count
@@ -302,6 +262,63 @@ AND s2.day_id = (
 );
 
 -- 16. List the 'name', 'star' rating, and 'review_count' of the top-5 businesses in the city of 'los angeles' based on the average 'star' rating that serve both 'vegetarian' and 'vegan' food and open between '14:00' and '16:00' hours. Note: The average star rating should be computed by taking the mean of 'star' ratings provided in each review of this business.
+-- ~ 5 ms
+SELECT b.name, b.stars, b.review_count
+FROM business AS b
+INNER JOIN (
+    SELECT r.business_id AS business_id, avg(r.stars) AS avg
+    FROM review AS r 
+    GROUP BY r.business_id
+) AS stars ON stars.business_id = b.id 
+INNER JOIN schedule AS s ON s.business_id = b.id
+WHERE b.id IN (
+    SELECT bl.business_id
+    FROM business_locations AS bl
+    INNER JOIN postal_code AS pc ON bl.postal_code_id = pc.id 
+    INNER JOIN city AS c ON c.id = pc.city_id
+    WHERE c.name = 'Los Angeles'
+
+    INTERSECT
+
+    SELECT dbr.business_id
+    FROM dietary_restrictions_business_relation AS dbr 
+    INNER JOIN dietary_restrictions AS dr ON dbr.dietary_restrictions_id = dr.id 
+    WHERE dr.name = 'vegetarian'
+   
+    INTERSECT
+
+    SELECT dbr.business_id
+    FROM dietary_restrictions_business_relation AS dbr 
+    INNER JOIN dietary_restrictions AS dr ON dbr.dietary_restrictions_id = dr.id 
+    WHERE dr.name = 'vegan'
+) AND b.is_open AND s.start_at <= '14:00' AND '16:00' <= s.end_at
+ORDER BY stars.avg DESC
+LIMIT 5;
+
+
+-- ~ 10 ms
+SELECT b.name, b.stars, b.review_count
+FROM business AS b
+INNER JOIN (
+    SELECT r.business_id AS business_id, avg(r.stars) AS avg
+    FROM review AS r 
+    GROUP BY r.business_id
+) AS stars ON stars.business_id = b.id 
+INNER JOIN schedule AS s ON s.business_id = b.id
+INNER JOIN business_locations AS bl ON bl.business_id = b.id 
+INNER JOIN postal_code AS pc ON bl.postal_code_id = pc.id 
+INNER JOIN city AS c ON c.id = pc.city_id
+INNER JOIN dietary_restrictions_business_relation AS dbr1 ON dbr1.business_id = b.id
+INNER JOIN dietary_restrictions AS dr1 ON dbr1.dietary_restrictions_id = dr1.id 
+INNER JOIN dietary_restrictions_business_relation AS dbr2 ON dbr2.business_id = b.id
+INNER JOIN dietary_restrictions AS dr2 ON dbr2.dietary_restrictions_id = dr2.id 
+WHERE dr1.name = 'vegetarian' AND dr2.name = 'vegan' AND c.name = 'Los Angeles' 
+    AND b.is_open AND s.start_at <= '14:00' AND '16:00' <= s.end_at
+ORDER BY stars.avg DESC
+LIMIT 5;
+
+
+-- ~ 200 ms
 SELECT b.name, b.stars, b.review_count
 FROM business AS b
 INNER JOIN (
@@ -336,6 +353,34 @@ WHERE b.id IN (
     FROM schedule AS s 
     WHERE s.start_at <= '14:00' AND '16:00' <= s.end_at
 ) AND b.is_open
+ORDER BY stars.avg DESC
+LIMIT 5;
+
+-- ~ 430 ms
+SELECT b.name, b.stars, b.review_count
+FROM business AS b
+INNER JOIN (
+    SELECT r.business_id AS business_id, avg(r.stars) AS avg
+    FROM review AS r 
+    GROUP BY r.business_id
+) AS stars ON stars.business_id = b.id 
+INNER JOIN schedule AS s ON s.business_id = b.id
+INNER JOIN business_locations AS bl ON bl.business_id = b.id 
+INNER JOIN postal_code AS pc ON bl.postal_code_id = pc.id 
+INNER JOIN city AS c ON c.id = pc.city_id
+WHERE c.name = 'Los Angeles' AND b.id IN (
+    SELECT dbr.business_id
+    FROM dietary_restrictions_business_relation AS dbr 
+    INNER JOIN dietary_restrictions AS dr ON dbr.dietary_restrictions_id = dr.id 
+    WHERE dr.name = 'vegetarian'
+   
+    INTERSECT
+
+    SELECT dbr.business_id
+    FROM dietary_restrictions_business_relation AS dbr 
+    INNER JOIN dietary_restrictions AS dr ON dbr.dietary_restrictions_id = dr.id 
+    WHERE dr.name = 'vegan'
+) AND b.is_open AND s.start_at <= '14:00' AND '16:00' <= s.end_at
 ORDER BY stars.avg DESC
 LIMIT 5;
 

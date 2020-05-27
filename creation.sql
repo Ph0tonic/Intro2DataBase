@@ -36,7 +36,7 @@ CREATE TABLE business_locations (
   "postal_code_id" integer NOT NULL REFERENCES "postal_code"(id) ON DELETE CASCADE,
   "business_id" integer UNIQUE NOT NULL REFERENCES "business"(id) ON DELETE CASCADE,
 
-  PRIMARY KEY ("business_id", "postal_code_id"),
+  PRIMARY KEY ("postal_code_id", "business_id"),
 
   "address" varchar,
   "latitude" float NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE elite_years (
   "user_id" integer NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   "year" INTEGER NOT NULL,
 
-  PRIMARY KEY ("user_id", "year")
+  PRIMARY KEY ("year", "user_id")
 );
 
 CREATE TABLE review (
@@ -79,7 +79,7 @@ CREATE TABLE review (
   "user_id" integer NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   "business_id" integer REFERENCES business(id) ON DELETE CASCADE,
 
-  PRIMARY KEY (business_id, user_id, id),
+  PRIMARY KEY (id, business_id, user_id),
 
   "date" date NOT NULL,
   "text" text NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE tip (
   "user_id" integer NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   "business_id" integer NOT NULL REFERENCES business(id) ON DELETE CASCADE,
 
-  PRIMARY KEY (business_id, user_id, id),
+  PRIMARY KEY (id, business_id, user_id),
 
   "date" date NOT NULL,
   "text" varchar NOT NULL,
@@ -110,7 +110,7 @@ CREATE TABLE business_categorie (
   "business_id" integer NOT NULL REFERENCES business(id) ON DELETE CASCADE,
   "categorie_id" integer NOT NULL REFERENCES categorie(id) ON DELETE CASCADE,
 
-  PRIMARY KEY (business_id, categorie_id)
+  PRIMARY KEY (categorie_id, business_id)
 );
 
 CREATE TABLE music (
