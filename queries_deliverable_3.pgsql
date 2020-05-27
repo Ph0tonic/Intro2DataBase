@@ -200,7 +200,6 @@ WHERE b.review_count > 6
 AND s.name = 'CA'
 ORDER BY b.stars DESC
 LIMIT 10;
--- CANDIDATE TO INDEX FOR STATE ...
 
 -- 10. Find the top-10 (by number of stars) ids of businesses per state. Show the results per state, in a descending order of number of stars.
 -- Display state abbreviation instead of state_id
@@ -255,23 +254,6 @@ FROM (
 ) AS business_reviewed;
 
 -- 14. What is the difference between the average useful rating of reviews given by elite and non-elite users
-WITH elite_users AS (
-    SELECT DISTINCT e.user_id
-    FROM elite_years AS e
-    WHERE e.year = 2018
-)
-SELECT abs(avg_useful_elite.average - avg_useful_non_elite.average)
-FROM (
-    SELECT avg(r.useful) AS average
-    FROM review AS r
-    WHERE r.user_id IN (SELECT * FROM elite_users)
-) AS avg_useful_elite,
-(
-    SELECT avg(r.useful) AS average
-    FROM review AS r
-    WHERE r.user_id NOT IN (SELECT * FROM elite_users)
-) AS avg_useful_non_elite;
-
 --proposed update v2 (If no cache is force at all then the query is able to manage it even better)
 SELECT abs(avg_useful_elite.average - avg_useful_non_elite.average)
 FROM (
