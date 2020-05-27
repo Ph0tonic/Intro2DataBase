@@ -94,18 +94,15 @@ limit 1;
 
 -- 9. Find the total average of “average star” of elite users, grouped by the year in which 
 -- they started to be elite users. Display the required averages next to the appropriate years.
-
--- TODO: Fix me, this doesn't ensure that you only compute averages of "avg star" of users grouped by the years in which they started being elite.
--- TODO: Check this new query
 SELECT e.year, avg(u.average_stars)
 FROM "user" AS u
 INNER JOIN (
-    SELECT min(e.year), e.user_id as user_id
+    SELECT min(e.year) as year, e.user_id as user_id
     FROM elite_years AS e
-    GROUP BY u.id;
-) AS e ON e.user_id = u.id
+    GROUP BY e.user_id
+) e ON e.user_id = u.id
 GROUP BY e.year
-ORDER BY e.year; -- NOT NECESSARY
+ORDER BY e.year; -- NOT NECESSARY BUT NICER
 
 -- 10. List the names of the top-10 businesses based on the median “star” rating,
 -- that are currently open in the city of New York.
