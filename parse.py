@@ -3,6 +3,8 @@ import pandas as pd
 import ast
 import geopandas as gpd
 import geopy
+import re
+import math
 from tqdm import tqdm
 tqdm.pandas()
 
@@ -35,8 +37,6 @@ user_temp2 = pd.read_csv('csv_files/yelp_academic_dataset_user.csv',converters=c
 
 # Parse friends
 friends_temp=friends.reset_index().rename(columns={'index':'id'})
-validate_query = friends_temp
-validate_query["friends"]=validate_query["friends"].map(lambda l : len(l))
 chunks = np.array_split(friends_temp, 100000)
 
 processed = []
@@ -77,7 +77,53 @@ elite_table.to_csv('generated/elite_years.csv', index=False)
 business_ids = business["business_id"].reset_index().set_index("business_id")["index"].to_dict()
 del business["business_id"]
 business_table = business.reset_index().rename(columns={'index':'id'})
-business_table
+
+# Clean cities
+def clean_city_name(b):
+    temp = re.sub(r'\([^)]*\)', '', b.city) # Remove parenthesis and content
+    temp = re.sub(' - ', '-', temp) # Remove dash with spaces
+    temp = temp.lower()
+    temp = temp.strip().rstrip(',').strip().rstrip(b.state.lower()).strip().rstrip(',').strip()
+    
+    # Some more specific rules for thoses data
+    temp = re.sub(r'^n ', 'North ', temp) # Convert city starting with a single N into North
+    temp = re.sub(r'^n\. ', 'North ', temp) # Convert city starting with a single N into North
+    temp = re.sub(r'^[scw] ', '', temp) # Useless single character for this dataset
+    temp = re.sub('las vergas', 'las vegas', temp) # City with name Las Vergas
+    temp = re.sub('110 las vegas', 'las vegas', temp) # City with name Las Vergas
+    temp = re.sub('ii', 'i', temp) # City with duplicates i do not exist in english
+    temp = re.sub('metro are', '', temp) # Phoenix has some strange variants with metro are
+    temp = re.sub('metro', '', temp) # Same but preceeded by metro
+    temp = re.sub('phoenx', 'phoenix', temp) # Same but preceeded by metro
+    
+    # Fix Montreal specificity
+    temp = re.sub('montreal-ouest', 'montreal', temp)
+    temp = re.sub('montreal-west', 'montreal', temp)
+    temp = re.sub('montreal-nord', 'montreal', temp)
+    temp = re.sub('montreal-est', 'montreal', temp)
+    temp = re.sub('montreal-quest', 'montreal', temp)
+    
+    temp = re.sub('ste-', 'sainte-', temp)
+    temp = re.sub('st-', 'saint-', temp)
+    temp = re.sub('saint-léonard', 'saint-leonard', temp)
+    temp = re.sub('st. léonard', 'saint-leonard', temp)
+    temp = re.sub('st. leonard', 'saint-leonard', temp)
+    
+    temp = re.sub('st.pittsburgh', 'pittsburgh', temp)
+    temp = re.sub('chomedey, laval', 'laval', temp)
+    
+    temp = re.sub('mt\.', 'mount', temp)
+    temp = re.sub('mt', 'mount', temp)
+    
+    # Remove second part if comma + remove duplicates spaces
+    temp = temp.split(',', 1)[0]
+    temp = " ".join(temp.title().split())
+    return temp
+
+business_table.loc[~business_table.city.isna(),'city'] = business_table[~business_table.city.isna()].progress_apply(clean_city_name, axis=1)
+business_table[~business_table.city.isna()].progress_apply(clean_city_name, axis=1)
+
+
 
 # Fix business postal_code and city
 # Locators used
@@ -87,7 +133,7 @@ mapQuestLocator=geopy.geocoders.OpenMapQuest("StxlGpGLb5EapoCXFQBf6GroFDOZTBJj",
 location=coder.reverse("36.169710,-115.123695")
 openCageLocator=geopy.geocoders.OpenCage("71ef46faea4b4e198a0891d79714905b",timeout=3)
 location=coder.reverse("36.169710,-115.123695")
-googleLocator=geopy.geocoders.GoogleV3(api_key=YOUR_API_KEY)
+googleLocator=geopy.geocoders.GoogleV3(api_key=YOUR_API_KEY) # TODO: Add your own GOOGLE API Key
 
 def get_postal_code(data):
     coordinates = f'{data.latitude},{data.longitude}'
@@ -118,7 +164,7 @@ def get_address(data):
     return location.raw.get("address").get("road", location.raw.get("address").get("neighbourhood", np.NaN))
 
 
-def format(locs):
+def format_google_maps_res(locs):
     res=np.NaN
     route=list(filter(lambda x: x.get("types")[0]=="route", locs.get("address_components")))
     nb=list(filter(lambda x: x.get("types")[0]=="street_number", locs.get("address_components")))
@@ -134,9 +180,9 @@ def format(locs):
 def get_address_v2(data):
     coordinates = f'{data.latitude},{data.longitude}'
     locations = googleLocator.reverse(coordinates)
-    res=format(location[0].raw)
+    res=format_google_maps_res(location[0].raw)
     if np.isnan(res) and len(locations)>0:
-        res=format(location[1].raw)
+        res=format_google_maps_res(location[1].raw)
     return res
 
 business_table.loc[business_table.postal_code.isna(),'postal_code'] = business_table[business_table.postal_code.isna()].progress_apply(get_postal_code, axis=1)
@@ -203,6 +249,7 @@ categories = categories.drop_duplicates().reset_index()
 del categories["index"]
 categories.index += 1
 categories = categories.reset_index().rename(columns={"index":"id", "categories": "name"})
+categories.index += 1
 categories_dict = categories.reset_index().set_index("name")["index"].to_dict()
 business_categories["categorie_id"] = business_categories["categories"].progress_map(lambda cat: categories_dict[cat])
 del business_categories["categories"]
