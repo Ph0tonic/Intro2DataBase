@@ -162,16 +162,16 @@ ORDER BY b.stars DESC
 LIMIT 10;
 
 -- 10. Find the top-10 (by number of stars) ids of businesses per state. Show the results per state, in a descending order of number of stars.
--- Display state abbreviation instead of state_id
-SELECT br.business_id, br.state_id
+SELECT br.business_id, br.name
 FROM (
     SELECT 
-        b.id AS business_id, c.state_id,
+        b.id AS business_id, s.name,
         row_number() OVER(PARTITION BY c.state_id ORDER BY b.stars DESC) AS rank
     FROM business AS b 
     INNER JOIN business_locations AS bl ON bl.business_id = b.id 
     INNER JOIN postal_code AS pc ON pc.id = bl.postal_code_id
     INNER JOIN city AS c ON c.id = pc.city_id
+    INNER JOIN state AS s ON s.id = c.state_id
 ) AS br
 WHERE br.rank <= 10;
 
