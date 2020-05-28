@@ -121,7 +121,7 @@ FROM (
 ) AS b_late;
 
 -- 7. Find the names of the cities where all businesses are closed on Sundays.
-SELECT DISTINCT LOWER(c.name)
+SELECT DISTINCT c.name
 FROM city AS c
 WHERE c.id NOT IN (
     SELECT pc.city_id
