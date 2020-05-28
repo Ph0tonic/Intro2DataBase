@@ -157,7 +157,7 @@ INNER JOIN postal_code AS pc ON pc.city_id = c.id
 INNER JOIN business_locations AS bl ON bl.postal_code_id = pc.id
 INNER JOIN business AS b ON b.id = bl.business_id
 AND s.name = 'CA'
-ORDER BY b.stars DESC
+ORDER BY b.stars DESC, b.name
 LIMIT 10;
 
 -- 10. Find the top-10 (by number of stars) ids of businesses per state. Show the results per state, in a descending order of number of stars.
