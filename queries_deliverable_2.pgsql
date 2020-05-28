@@ -114,7 +114,7 @@ LIMIT 10;
 
 -- 11. Find and show the minimum, maximum, mean, and median number of categories per business. 
 -- Show the final statistic (4 numbers respectively, aggregated over all the businesses).
-SELECT min(results), max(results), avg(results), percentile_cont(0.5) WITHIN GROUP (ORDER BY results)
+SELECT min(results), max(results), avg(results), percentile_cont(0.5) WITHIN GROUP (ORDER BY results) AS "median"
 FROM (
     SELECT count(bc.categorie_id) AS results
     FROM business AS b
