@@ -156,7 +156,6 @@ INNER JOIN city AS c ON c.state_id = s.id
 INNER JOIN postal_code AS pc ON pc.city_id = c.id
 INNER JOIN business_locations AS bl ON bl.postal_code_id = pc.id
 INNER JOIN business AS b ON b.id = bl.business_id
-WHERE b.review_count > 6
 AND s.name = 'CA'
 ORDER BY b.stars DESC
 LIMIT 10;
