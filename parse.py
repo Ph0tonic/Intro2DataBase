@@ -165,24 +165,24 @@ def get_address(data):
 
 
 def format_google_maps_res(locs):
-    res=np.NaN
+    res=None
     route=list(filter(lambda x: x.get("types")[0]=="route", locs.get("address_components")))
     nb=list(filter(lambda x: x.get("types")[0]=="street_number", locs.get("address_components")))
     neighborhood=list(filter(lambda x: x.get("types")[0]=="neighborhood", locs.get("address_components")))
     if(len(route)>0):
         res=route[0].get("long_name")
-    if(not np.isnan(res) and len(nb)>0):
+    if(not res == None and len(nb)>0):
         res=res+" "+nb[0].get("long_name")
-    if(np.isnan(res) and len(neighborhood)>0):
+    if(res == None and len(neighborhood)>0):
         res=neighborhood[0].get("long_name")
     return res
 
 def get_address_v2(data):
     coordinates = f'{data.latitude},{data.longitude}'
     locations = googleLocator.reverse(coordinates)
-    res=format_google_maps_res(location[0].raw)
-    if np.isnan(res) and len(locations)>0:
-        res=format_google_maps_res(location[1].raw)
+    res=format_google_maps_res(locations[0].raw)
+    if res == None and len(locations)>0:
+        res=format_google_maps_res(locations[1].raw)
     return res
 
 business_table.loc[business_table.postal_code.isna(),'postal_code'] = business_table[business_table.postal_code.isna()].progress_apply(get_postal_code, axis=1)
