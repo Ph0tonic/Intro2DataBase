@@ -462,3 +462,24 @@ WHERE city.id IN (
 );
 
 -- 20. For each of the top-10 (by the number of reviews) businesses, find the top-3 reviewers by activity among those who reviewed the business. Reviewers by activity are defined and ordered as the users that have the highest numbers of total reviews across all the businesses(the users that review the most).
+WITH top_10_business AS (
+    SELECT b.id
+    FROM business AS b
+    ORDER by b.review_count DESC
+    LIMIT 10
+) 
+SELECT ur.name, ur.id, ur.rank
+FROM (
+    SELECT
+        u.name, 
+        row_number() OVER(PARTITION BY tbr.id ORDER BY u.review_count DESC) AS rank,
+        tbr.id
+    FROM (
+        SELECT DISTINCT r.user_id, tb.id
+        FROM top_10_business as tb
+        INNER JOIN review AS r ON r.business_id = tb.id 
+    ) AS tbr
+    INNER JOIN "user" AS u ON tbr.user_id = u.id
+) AS ur
+WHERE ur.rank <= 3
+ORDER BY ur.id, ur.rank;
