@@ -264,3 +264,6 @@ $friend_min_trigger$ LANGUAGE plpgsql;
 
 CREATE TRIGGER friend_min_trigger BEFORE INSERT OR UPDATE ON are_friends
   FOR EACH ROW EXECUTE PROCEDURE friend_min_trigger();
+
+CREATE INDEX categorie_name_index ON categorie ("name");
+CREATE INDEX city_name_index ON city ("name");
